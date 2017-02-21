@@ -8,16 +8,18 @@ public class PlayerController : MonoBehaviour {
     ///////////////////////////////////////////////
     /// MEMBERS
     ///////////////////////////////////////////////
+    public static float lastPlayerBounceZPos = 0f;
     public float driveSpeed = 0.5f;
     public float laneChangeSpeed = 0.25f;
+    public float bounceForce = 400f;
     public float testingJumpForce = 400f;
-    public bool testing;
-    public float startHeight;
+    public bool spacebarBouncing;
 
-    private int FAR_RIGHT_LANE = 3;
-    private int FAR_LEFT_LANE = 0;
+    private static int FAR_RIGHT_LANE = 3;
+    private static int FAR_LEFT_LANE = 0;
     private GameObject[] lanes;
     private GameObject currentLane;
+    private TrafficGenerator trafficGenerator;
     private Vector3 newPosition;
     private Vector3 lanePosition;
     private Vector3 jumpPoint;
@@ -25,6 +27,7 @@ public class PlayerController : MonoBehaviour {
     private bool leftLaneChange = false;
     private bool rightLaneChange = false;
     private bool crashed = false;
+    private float startHeight;
     private float previousZ = 0f;
 
     ///////////////////////////////////////////////
@@ -36,12 +39,11 @@ public class PlayerController : MonoBehaviour {
         lanes = GameObject.FindGameObjectsWithTag("Lane");
         Array.Sort(lanes, CompareObjectNames);
 
+        trafficGenerator = GameObject.Find("TrafficGenerator").GetComponent<TrafficGenerator>();
+
         startHeight = transform.position.y;
 
-        if (!testing)
-        {
-            StartBounce();
-        }
+        StartPlayerBounce();
     }
 	void Update ()
     {
@@ -71,11 +73,6 @@ public class PlayerController : MonoBehaviour {
         }
 
         PlayerMovement();
-
-        if (testing)
-        {
-            BounceTesting();
-        }
     }
 
     ///////////////////////////////////////////////
@@ -85,6 +82,25 @@ public class PlayerController : MonoBehaviour {
     {
         crashed = true;
         GetComponent<Rigidbody>().velocity = Vector3.zero;
+    }
+    public void BouncePlayer()
+    {
+        // Cancel y velocity
+        Vector3 vel = GetComponent<Rigidbody>().velocity;
+        vel.y = 0;
+        GetComponent<Rigidbody>().velocity = vel;
+
+        // Set player y position to a fixed position (for consistent bouncing distance)
+        Vector3 pos = transform.position;
+        pos.y = startHeight;
+        transform.position = pos;
+
+        // Save this as the last bounce z position of the player, then use that to remove old traffic
+        lastPlayerBounceZPos = transform.position.z;
+        trafficGenerator.RemoveOldTraffic();
+
+        // Apply the bounce force
+        GetComponent<Rigidbody>().AddForce(new Vector3(0, bounceForce, 0));
     }
 
     ///////////////////////////////////////////////
@@ -131,31 +147,23 @@ public class PlayerController : MonoBehaviour {
         // Move to new postion
         GetComponent<Rigidbody>().MovePosition(newPosition);
     }
-    private void StartBounce()
+    private void StartPlayerBounce()
     {
+        // Cancel y velocity
         Vector3 vel = GetComponent<Rigidbody>().velocity;
         vel.y = 0;
         GetComponent<Rigidbody>().velocity = vel;
-        GetComponent<Rigidbody>().AddForce(new Vector3(0, testingJumpForce, 0));
-    }
-    private void BounceTesting()
-    {
-        if (transform.position.y <= startHeight)
-        {
-            float distanceZ = transform.position.z - previousZ;
-            print("Distance = " + distanceZ);
-            previousZ = transform.position.z;
 
-            Vector3 vel = GetComponent<Rigidbody>().velocity;
-            vel.y = 0;
-            GetComponent<Rigidbody>().velocity = vel;
+        // Set player y position to a fixed position (for consistent bouncing distance)
+        Vector3 pos = transform.position;
+        pos.y = startHeight;
+        transform.position = pos;
 
-            Vector3 pos = transform.position;
-            pos.y = startHeight;
-            transform.position = pos;
+        // Save this as the last bounce z position of the player, then use that to remove old traffic
+        lastPlayerBounceZPos = transform.position.z;
 
-            GetComponent<Rigidbody>().AddForce(new Vector3(0, testingJumpForce, 0));
-        }
+        // Apply the bounce force
+        GetComponent<Rigidbody>().AddForce(new Vector3(0, bounceForce, 0));
     }
     private void LeftLaneChange()
     {

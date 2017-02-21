@@ -10,9 +10,7 @@ public class SkipperController : MonoBehaviour {
     ///////////////////////////////////////////////
     public float driveSpeed = 0.5f;
     public float laneChangeSpeed = 0.25f;
-    public float testingJumpForce = 400f;
-    public bool testing;
-    public float startHeight;
+    public float bounceForce = 400f;
 
     private int FAR_RIGHT_LANE = 3;
     private int FAR_LEFT_LANE = 0;
@@ -25,6 +23,7 @@ public class SkipperController : MonoBehaviour {
     private bool leftLaneChange = false;
     private bool rightLaneChange = false;
     private bool crashed = false;
+    private float startHeight;
     private float previousZ = 0f;
 
     ///////////////////////////////////////////////
@@ -38,11 +37,8 @@ public class SkipperController : MonoBehaviour {
 
         startHeight = transform.position.y;
 
-        if (!testing)
-        {
-            StartBounce();
-            RightLaneChange();
-        }
+        BounceSkipper();
+        RightLaneChange();
     }
 	void Update ()
     {
@@ -50,19 +46,6 @@ public class SkipperController : MonoBehaviour {
         {
             return;
         }
-
-        //if (!leftLaneChange && !rightLaneChange)
-        //{
-        //    // Detect any lane changes
-        //    if (Input.GetAxis("Horizontal") < 0)
-        //    {
-        //        LeftLaneChange();
-        //    }
-        //    else if (Input.GetAxis("Horizontal") > 0)
-        //    {
-        //        RightLaneChange();
-        //    }
-        //}
     }
     void FixedUpdate()
     {
@@ -72,11 +55,6 @@ public class SkipperController : MonoBehaviour {
         }
 
         SkipperMovement();
-
-        if (testing)
-        {
-            BounceTesting();
-        }
     }
 
     ///////////////////////////////////////////////
@@ -86,6 +64,23 @@ public class SkipperController : MonoBehaviour {
     {
         crashed = true;
         GetComponent<Rigidbody>().velocity = Vector3.zero;
+    }
+    public void BounceSkipper()
+    {
+        RandomLaneChange();
+
+        // Cancel y velocity
+        Vector3 vel = GetComponent<Rigidbody>().velocity;
+        vel.y = 0;
+        GetComponent<Rigidbody>().velocity = vel;
+
+        // Set player y position to a fixed position (for consistent bouncing distance)
+        Vector3 pos = transform.position;
+        pos.y = startHeight;
+        transform.position = pos;
+
+        // Apply the bounce force
+        GetComponent<Rigidbody>().AddForce(new Vector3(0, bounceForce, 0));
     }
     public void RandomLaneChange()
     {
@@ -144,32 +139,6 @@ public class SkipperController : MonoBehaviour {
 
         // Move to new postion
         GetComponent<Rigidbody>().MovePosition(newPosition);
-    }
-    private void StartBounce()
-    {
-        Vector3 vel = GetComponent<Rigidbody>().velocity;
-        vel.y = 0;
-        GetComponent<Rigidbody>().velocity = vel;
-        GetComponent<Rigidbody>().AddForce(new Vector3(0, testingJumpForce, 0));
-    }
-    private void BounceTesting()
-    {
-        if (transform.position.y <= startHeight)
-        {
-            float distanceZ = transform.position.z - previousZ;
-            print("Distance = " + distanceZ);
-            previousZ = transform.position.z;
-
-            Vector3 vel = GetComponent<Rigidbody>().velocity;
-            vel.y = 0;
-            GetComponent<Rigidbody>().velocity = vel;
-
-            Vector3 pos = transform.position;
-            pos.y = startHeight;
-            transform.position = pos;
-
-            GetComponent<Rigidbody>().AddForce(new Vector3(0, testingJumpForce, 0));
-        }
     }
     private void LeftLaneChange()
     {

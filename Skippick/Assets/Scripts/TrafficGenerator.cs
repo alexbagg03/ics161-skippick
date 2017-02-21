@@ -31,7 +31,7 @@ public class TrafficGenerator : MonoBehaviour {
     {
         if (removeTrafficWhenReady)
         {
-            if (playerTransform.position.z > TrafficController.lastPlayerBounceZPos)
+            if (playerTransform.position.z > PlayerController.lastPlayerBounceZPos)
             {
                 RemoveOldTraffic();
                 removeTrafficWhenReady = false;
