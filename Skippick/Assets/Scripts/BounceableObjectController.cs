@@ -21,7 +21,7 @@ public class BounceableObjectController : MonoBehaviour {
                 coll.gameObject.GetComponent<PlayerController>().BouncePlayer();
                 break;
             case "Skipper":
-                coll.gameObject.GetComponent<SkipperController>().BounceSkipper();
+                coll.gameObject.GetComponent<SkipperController>().BounceSkipper(true);
                 break;
         }
     }
