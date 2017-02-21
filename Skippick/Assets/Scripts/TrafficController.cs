@@ -1,28 +1,42 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 public class TrafficController : MonoBehaviour {
 
-    public float bounceForce = 100f;
+    public static float lastPlayerBounceZPos = 0f;
+    public float bounceForce = 400f;
+    
+    private TrafficGenerator trafficGenerator;
 
 	void Start ()
     {
-		
-	}
+        trafficGenerator = GameObject.Find("TrafficGenerator").GetComponent<TrafficGenerator>();
+    }
 	void Update ()
     {
-		
+
 	}
     void OnCollisionEnter(Collision coll)
     {
         if (coll.gameObject.tag == "Player")
         {
-            Rigidbody playerRigidbody = coll.gameObject.GetComponent<Rigidbody>();
-            Vector3 vel = playerRigidbody.velocity;
+            GameObject player = coll.gameObject;
+            float startHeight = player.GetComponent<PlayerController>().startHeight;
+
+            Vector3 vel = player.GetComponent<Rigidbody>().velocity;
             vel.y = 0;
-            playerRigidbody.velocity = vel;
-            playerRigidbody.AddForce(new Vector3(0, bounceForce, 0));
+            player.GetComponent<Rigidbody>().velocity = vel;
+
+            Vector3 pos = player.transform.position;
+            pos.y = startHeight;
+            player.transform.position = pos;
+
+            lastPlayerBounceZPos = player.transform.position.z;
+            trafficGenerator.RemoveOldTraffic();
+
+            player.GetComponent<Rigidbody>().AddForce(new Vector3(0, bounceForce, 0));
         }
     }
 

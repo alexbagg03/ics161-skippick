@@ -4,14 +4,23 @@ using UnityEngine;
 
 public class RoadGenerator : MonoBehaviour {
 
+    ///////////////////////////////////////////////
+    /// MEMBERS
+    ///////////////////////////////////////////////
     public Transform player;
     public GameObject roadSection;
 
+    public static float ROAD_DISTANCE = 350;
     private List<GameObject> roads;
     private GameObject currentRoad;
+    private GameObject previousRoad;
+    private TrafficGenerator trafficGenerator;
     private string originalName;
     private int roadNumber = 0;
 
+    ///////////////////////////////////////////////
+    /// MONOBEHAVIOR METHODS
+    ///////////////////////////////////////////////
     void Start ()
     {
         originalName = roadSection.name;
@@ -19,31 +28,48 @@ public class RoadGenerator : MonoBehaviour {
         roads = new List<GameObject>();
         currentRoad = roadSection;
         roads.Add(currentRoad);
+
+        trafficGenerator = GameObject.Find("TrafficGenerator").GetComponent<TrafficGenerator>();
     }
 	void Update ()
     {
         if (player.position.z >= currentRoad.transform.position.z)
         {
-            float currX = currentRoad.transform.position.x;
-            float currY = currentRoad.transform.position.y;
-            float currZ = currentRoad.transform.position.z;
-
-            roadNumber++;
-
-            GameObject newRoad = GameObject.Instantiate(currentRoad);
-            newRoad.transform.position = new Vector3(currX, currY, currZ + 350);
-            newRoad.name = originalName + "(" + roadNumber + ")";
-            roadSection = newRoad;
-
-            currentRoad = newRoad;
-            roads.Add(currentRoad);
+            GenerateNewRoad();
+            trafficGenerator.GenerateBounceableTraffic();
         }
 
-        GameObject previousRoad = roads[0];
-        if (player.position.z >= previousRoad.transform.position.z + 350)
+        // Remove old road that is too far behind
+        previousRoad = roads[0];
+        if (player.position.z >= previousRoad.transform.position.z + ROAD_DISTANCE)
         {
-            roads.Remove(previousRoad);
-            Destroy(previousRoad);
+            RemoveOldRoad();
         }
     }
+
+    ///////////////////////////////////////////////
+    /// PRIVATE METHODS
+    ///////////////////////////////////////////////
+    private void GenerateNewRoad()
+    {
+        float currX = currentRoad.transform.position.x;
+        float currY = currentRoad.transform.position.y;
+        float currZ = currentRoad.transform.position.z;
+
+        roadNumber++;
+
+        GameObject newRoad = GameObject.Instantiate(currentRoad);
+        newRoad.transform.position = new Vector3(currX, currY, currZ + ROAD_DISTANCE);
+        newRoad.name = originalName + "(" + roadNumber + ")";
+        roadSection = newRoad;
+
+        currentRoad = newRoad;
+        roads.Add(currentRoad);
+    }
+    private void RemoveOldRoad()
+    {
+        roads.Remove(previousRoad);
+        Destroy(previousRoad);
+    }
+
 }

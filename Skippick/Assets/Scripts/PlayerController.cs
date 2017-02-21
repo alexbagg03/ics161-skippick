@@ -10,7 +10,9 @@ public class PlayerController : MonoBehaviour {
     ///////////////////////////////////////////////
     public float driveSpeed = 0.5f;
     public float laneChangeSpeed = 0.25f;
-    public float jumpForce = 100f;
+    public float testingjumpForce = 400f;
+    public bool testing;
+    public float startHeight;
 
     private int FAR_RIGHT_LANE = 3;
     private int FAR_LEFT_LANE = 0;
@@ -20,10 +22,10 @@ public class PlayerController : MonoBehaviour {
     private Vector3 lanePosition;
     private Vector3 jumpPoint;
     private int currentLaneIndex = -1;
-    private float startHeight;
     private bool leftLaneChange = false;
     private bool rightLaneChange = false;
     private bool crashed = false;
+    private float previousZ = 0f;
 
     ///////////////////////////////////////////////
     /// MONOBEHAVIOR METHODS
@@ -36,7 +38,10 @@ public class PlayerController : MonoBehaviour {
 
         startHeight = transform.position.y;
 
-        //StartBounce();
+        if (!testing)
+        {
+            StartBounce();
+        }
     }
 	void Update ()
     {
@@ -66,7 +71,11 @@ public class PlayerController : MonoBehaviour {
         }
 
         PlayerMovement();
-        BounceTesting();
+
+        if (testing)
+        {
+            BounceTesting();
+        }
     }
 
     ///////////////////////////////////////////////
@@ -127,16 +136,25 @@ public class PlayerController : MonoBehaviour {
         Vector3 vel = GetComponent<Rigidbody>().velocity;
         vel.y = 0;
         GetComponent<Rigidbody>().velocity = vel;
-        GetComponent<Rigidbody>().AddForce(new Vector3(0, jumpForce, 0));
+        GetComponent<Rigidbody>().AddForce(new Vector3(0, testingjumpForce, 0));
     }
     private void BounceTesting()
     {
         if (transform.position.y <= startHeight)
         {
+            float distanceZ = transform.position.z - previousZ;
+            print("Distance = " + distanceZ);
+            previousZ = transform.position.z;
+
             Vector3 vel = GetComponent<Rigidbody>().velocity;
             vel.y = 0;
             GetComponent<Rigidbody>().velocity = vel;
-            GetComponent<Rigidbody>().AddForce(new Vector3(0, jumpForce, 0));
+
+            Vector3 pos = transform.position;
+            pos.y = startHeight;
+            transform.position = pos;
+
+            GetComponent<Rigidbody>().AddForce(new Vector3(0, testingjumpForce, 0));
         }
     }
     private void LeftLaneChange()
@@ -144,28 +162,30 @@ public class PlayerController : MonoBehaviour {
         if (currentLaneIndex == -1)
         {
             currentLaneIndex = 1;
+            leftLaneChange = true;
+            currentLane = lanes[currentLaneIndex];
         }
         else if (currentLaneIndex != FAR_LEFT_LANE)
         {
             currentLaneIndex--;
+            leftLaneChange = true;
+            currentLane = lanes[currentLaneIndex];
         }
-
-        leftLaneChange = true;
-        currentLane = lanes[currentLaneIndex];
     }
     private void RightLaneChange()
     {
         if (currentLaneIndex == -1)
         {
             currentLaneIndex = 2;
+            rightLaneChange = true;
+            currentLane = lanes[currentLaneIndex];
         }
         else if (currentLaneIndex != FAR_RIGHT_LANE)
         {
             currentLaneIndex++;
+            rightLaneChange = true;
+            currentLane = lanes[currentLaneIndex];
         }
-
-        rightLaneChange = true;
-        currentLane = lanes[currentLaneIndex];
     }
     private int CompareObjectNames(GameObject x, GameObject y)
     {
