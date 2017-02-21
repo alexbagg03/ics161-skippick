@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-public class BounceableObjectController : MonoBehaviour {
+public class BounceableTraffic : MonoBehaviour {
 
     void Start ()
     {
