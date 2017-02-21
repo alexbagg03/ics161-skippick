@@ -6,9 +6,14 @@ public class RoadCrash : MonoBehaviour {
     
     void OnCollisionEnter(Collision coll)
     {
-        if (coll.gameObject.tag == "Player")
+        switch (coll.gameObject.tag)
         {
-            coll.gameObject.GetComponent<PlayerController>().Crash();
+            case "Player":
+                coll.gameObject.GetComponent<PlayerController>().Crash();
+                break;
+            case "Skipper":
+                coll.gameObject.GetComponent<SkipperController>().Crash();
+                break;
         }
     }
 

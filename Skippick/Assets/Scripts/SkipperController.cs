@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class PlayerController : MonoBehaviour {
+public class SkipperController : MonoBehaviour {
 
     ///////////////////////////////////////////////
     /// MEMBERS
@@ -41,6 +41,7 @@ public class PlayerController : MonoBehaviour {
         if (!testing)
         {
             StartBounce();
+            RightLaneChange();
         }
     }
 	void Update ()
@@ -50,18 +51,18 @@ public class PlayerController : MonoBehaviour {
             return;
         }
 
-        if (!leftLaneChange && !rightLaneChange)
-        {
-            // Detect any lane changes
-            if (Input.GetAxis("Horizontal") < 0)
-            {
-                LeftLaneChange();
-            }
-            else if (Input.GetAxis("Horizontal") > 0)
-            {
-                RightLaneChange();
-            }
-        }
+        //if (!leftLaneChange && !rightLaneChange)
+        //{
+        //    // Detect any lane changes
+        //    if (Input.GetAxis("Horizontal") < 0)
+        //    {
+        //        LeftLaneChange();
+        //    }
+        //    else if (Input.GetAxis("Horizontal") > 0)
+        //    {
+        //        RightLaneChange();
+        //    }
+        //}
     }
     void FixedUpdate()
     {
@@ -70,7 +71,7 @@ public class PlayerController : MonoBehaviour {
             return;
         }
 
-        PlayerMovement();
+        SkipperMovement();
 
         if (testing)
         {
@@ -86,11 +87,24 @@ public class PlayerController : MonoBehaviour {
         crashed = true;
         GetComponent<Rigidbody>().velocity = Vector3.zero;
     }
+    public void RandomLaneChange()
+    {
+        float percentage = UnityEngine.Random.value * 100;
+
+        if (percentage < 50)
+        {
+            RightLaneChange();
+        }
+        else
+        {
+            LeftLaneChange();
+        }
+    }
 
     ///////////////////////////////////////////////
     /// PRIVATE METHODS
     ///////////////////////////////////////////////
-    private void PlayerMovement()
+    private void SkipperMovement()
     {
         if (currentLane == null)
         {
@@ -161,7 +175,7 @@ public class PlayerController : MonoBehaviour {
     {
         if (currentLaneIndex == -1)
         {
-            currentLaneIndex = 1;
+            currentLaneIndex = 2;
             leftLaneChange = true;
             currentLane = lanes[currentLaneIndex];
         }
@@ -176,7 +190,7 @@ public class PlayerController : MonoBehaviour {
     {
         if (currentLaneIndex == -1)
         {
-            currentLaneIndex = 2;
+            currentLaneIndex = 3;
             rightLaneChange = true;
             currentLane = lanes[currentLaneIndex];
         }
