@@ -23,6 +23,7 @@ public class PlayerController : MonoBehaviour {
     private float startHeight;
     private bool leftLaneChange = false;
     private bool rightLaneChange = false;
+    private bool crashed = false;
 
     ///////////////////////////////////////////////
     /// MONOBEHAVIOR METHODS
@@ -34,9 +35,16 @@ public class PlayerController : MonoBehaviour {
         Array.Sort(lanes, CompareObjectNames);
 
         startHeight = transform.position.y;
+
+        //StartBounce();
     }
 	void Update ()
     {
+        if (crashed)
+        {
+            return;
+        }
+
         if (!leftLaneChange && !rightLaneChange)
         {
             // Detect any lane changes
@@ -52,8 +60,22 @@ public class PlayerController : MonoBehaviour {
     }
     void FixedUpdate()
     {
+        if (crashed)
+        {
+            return;
+        }
+
         PlayerMovement();
-        JumpingMovement();
+        BounceTesting();
+    }
+
+    ///////////////////////////////////////////////
+    /// PUBLIC METHODS
+    ///////////////////////////////////////////////
+    public void Crash()
+    {
+        crashed = true;
+        GetComponent<Rigidbody>().velocity = Vector3.zero;
     }
 
     ///////////////////////////////////////////////
@@ -100,9 +122,15 @@ public class PlayerController : MonoBehaviour {
         // Move to new postion
         GetComponent<Rigidbody>().MovePosition(newPosition);
     }
-    private void JumpingMovement()
+    private void StartBounce()
     {
-        // Handle constant jumping
+        Vector3 vel = GetComponent<Rigidbody>().velocity;
+        vel.y = 0;
+        GetComponent<Rigidbody>().velocity = vel;
+        GetComponent<Rigidbody>().AddForce(new Vector3(0, jumpForce, 0));
+    }
+    private void BounceTesting()
+    {
         if (transform.position.y <= startHeight)
         {
             Vector3 vel = GetComponent<Rigidbody>().velocity;
@@ -143,5 +171,6 @@ public class PlayerController : MonoBehaviour {
     {
         return x.name.CompareTo(y.name);
     }
+
 
 }

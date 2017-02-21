@@ -33,6 +33,7 @@ public class RoadGenerator : MonoBehaviour {
             GameObject newRoad = GameObject.Instantiate(currentRoad);
             newRoad.transform.position = new Vector3(currX, currY, currZ + 350);
             newRoad.name = originalName + "(" + roadNumber + ")";
+            roadSection = newRoad;
 
             currentRoad = newRoad;
             roads.Add(currentRoad);
