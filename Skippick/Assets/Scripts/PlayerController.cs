@@ -50,6 +50,10 @@ public class PlayerController : MonoBehaviour {
     }
 	void Update ()
     {
+        if (GameManager.Instance.gameOver)
+        {
+            return;
+        }
         if (resetting)
         {
             resetTimer += Time.deltaTime;
@@ -74,6 +78,13 @@ public class PlayerController : MonoBehaviour {
     }
     void FixedUpdate()
     {
+        if (GameManager.Instance.gameOver)
+        {
+            Rigidbody rb = GetComponent<Rigidbody>();
+            rb.velocity = Vector3.zero;
+            rb.useGravity = false;
+            return;
+        }
         if (resetting)
         {
             return;
@@ -136,7 +147,6 @@ public class PlayerController : MonoBehaviour {
 
         // Save this as the last bounce z position of the player, then use that to remove old traffic
         lastPlayerBounceZPos = transform.position.z;
-        trafficGenerator.RemoveOldTraffic();
 
         // Apply the bounce force
         GetComponent<Rigidbody>().AddForce(new Vector3(0, bounceForce, 0));

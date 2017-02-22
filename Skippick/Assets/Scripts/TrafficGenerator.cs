@@ -11,6 +11,7 @@ public class TrafficGenerator : MonoBehaviour {
     public PlayerStats playerStats;
     public GameObject bounceableObject;
     public float bounceablePercentage = 70;
+    public static List<Vector3> nextBounceableObjectPositions;
     
     private List<Vector3> lanePositions;
     private List<List<GameObject>> generatedBounceableObjects;
@@ -26,21 +27,15 @@ public class TrafficGenerator : MonoBehaviour {
         player = GameObject.FindGameObjectWithTag("Player");
 
         lastBounceableZPos = player.transform.position.z + playerStats.bounceDistance;
-
-        SetLanePositions();
-        GenerateTraffic();
     }
 	void Update ()
     {
-        if (removeTrafficWhenReady)
+        nextBounceableObjectPositions = new List<Vector3>();
+        if (generatedBounceableObjects != null)
         {
-            float currentZ = player.transform.position.z;
-            float lastBounceZ = PlayerController.lastPlayerBounceZPos;
-
-            if (player.transform.position.z > PlayerController.lastPlayerBounceZPos + 20)
+            foreach (GameObject obj in generatedBounceableObjects[0])
             {
-                RemoveOldBounceableTraffic();
-                removeTrafficWhenReady = false;
+                nextBounceableObjectPositions.Add(obj.transform.position);
             }
         }
 	}
@@ -50,11 +45,12 @@ public class TrafficGenerator : MonoBehaviour {
     ///////////////////////////////////////////////
     public void GenerateTraffic()
     {
+        SetLanePositions();
         GenerateBounceableTraffic();
     }
     public void RemoveOldTraffic()
     {
-        removeTrafficWhenReady = true;
+        RemoveOldBounceableTraffic();
     }
 
     ///////////////////////////////////////////////

@@ -19,6 +19,9 @@ public class BounceableTraffic : MonoBehaviour {
                     playerController.BouncePlayer();
                 }
                 break;
+            case "Skipper":
+                other.gameObject.GetComponent<SkipperController>().BounceSkipper();
+                break;
         }
     }
     void OnTriggerStay(Collider other)

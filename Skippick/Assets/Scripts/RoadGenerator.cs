@@ -8,8 +8,12 @@ public class RoadGenerator : MonoBehaviour {
     /// MEMBERS
     ///////////////////////////////////////////////
     public Transform player;
+    public Transform skipper1;
+    public Transform skipper2;
     public PlayerStats playerStats;
     public GameObject roadSection;
+    public GameObject finishLineSection;
+    public int raceLength = 10;
 
     public static float ROAD_DISTANCE = 350;
     private List<GameObject> roads;
@@ -31,18 +35,25 @@ public class RoadGenerator : MonoBehaviour {
         roads.Add(currentRoad);
 
         trafficGenerator = GameObject.Find("TrafficGenerator").GetComponent<TrafficGenerator>();
-    }
-	void Update ()
-    {
-        if (player.position.z >= currentRoad.transform.position.z)
+
+        for (int i = 0; i < raceLength; i++)
         {
             GenerateNewRoad();
             trafficGenerator.GenerateTraffic();
         }
 
+        GenerateFinishLine();
+        trafficGenerator.GenerateTraffic();
+    }
+	void Update ()
+    {
         // Remove old road that is too far behind
         previousRoad = roads[0];
-        if (player.position.z >= previousRoad.transform.position.z + ROAD_DISTANCE + playerStats.bounceDistance)
+
+        bool playerBeyondRoad = player.position.z >= previousRoad.transform.position.z + ROAD_DISTANCE + playerStats.bounceDistance;
+        bool skipper1BeyondRoad = skipper1.position.z >= previousRoad.transform.position.z + ROAD_DISTANCE + playerStats.bounceDistance;
+        bool skipper2BeyondRoad = skipper2.position.z >= previousRoad.transform.position.z + ROAD_DISTANCE + playerStats.bounceDistance;
+        if (playerBeyondRoad && skipper1BeyondRoad && skipper2BeyondRoad)
         {
             RemoveOldRoad();
         }
@@ -66,6 +77,24 @@ public class RoadGenerator : MonoBehaviour {
 
         currentRoad = newRoad;
         roads.Add(currentRoad);
+    }
+    private void GenerateFinishLine()
+    {
+        float currZ = currentRoad.transform.position.z;
+
+        GameObject finishLine = GameObject.Instantiate(finishLineSection);
+        Vector3 position = finishLineSection.transform.position;
+
+        position.z = currZ + ROAD_DISTANCE;
+        finishLine.transform.position = position;
+
+        // Generate another road section after the finish line (just for aesthetics)
+        GameObject nextRoad = GameObject.Instantiate(currentRoad);
+        Vector3 nextRoadPos = finishLine.transform.position;
+        nextRoadPos.y = currentRoad.transform.position.y;
+        nextRoadPos.z += ROAD_DISTANCE;
+        nextRoad.transform.position = nextRoadPos;
+        roads.Add(nextRoad);
     }
     private void RemoveOldRoad()
     {

@@ -19,13 +19,12 @@ public class SkipperController : MonoBehaviour {
     private GameObject currentLane;
     private Vector3 newPosition;
     private Vector3 lanePosition;
-    private Vector3 jumpPoint;
     private int currentLaneIndex = -1;
+    private int bestLaneIndex = -2;
     private bool leftLaneChange = false;
     private bool rightLaneChange = false;
     private bool crashed = false;
     private float startHeight;
-    private float previousZ = 0f;
 
     ///////////////////////////////////////////////
     /// MONOBEHAVIOR METHODS
@@ -43,19 +42,28 @@ public class SkipperController : MonoBehaviour {
         {
             skipperNumber = int.Parse("" + name[name.Length - 1]);
         }
-
-        SetStartingRandomLane();
-        BounceSkipper(false);
+        
+        BounceSkipper();
     }
 	void Update ()
     {
+        if (GameManager.Instance.gameOver)
+        {
+            return;
+        }
         if (crashed)
         {
             return;
         }
+
+        ChangeToNextBestLane();
     }
     void FixedUpdate()
     {
+        if (GameManager.Instance.gameOver)
+        {
+            return;
+        }
         if (crashed)
         {
             return;
@@ -72,13 +80,8 @@ public class SkipperController : MonoBehaviour {
         crashed = true;
         GetComponent<Rigidbody>().velocity = Vector3.zero;
     }
-    public void BounceSkipper(bool changeLanes)
+    public void BounceSkipper()
     {
-        if (changeLanes)
-        {
-            RandomLaneChange();
-        }
-
         // Cancel y velocity
         Vector3 vel = GetComponent<Rigidbody>().velocity;
         vel.y = 0;
@@ -92,23 +95,58 @@ public class SkipperController : MonoBehaviour {
         // Apply the bounce force
         GetComponent<Rigidbody>().AddForce(new Vector3(0, bounceForce, 0));
     }
-    public void RandomLaneChange()
-    {
-        float percentage = UnityEngine.Random.value * 100;
-
-        if (percentage < 50)
-        {
-            RightLaneChange();
-        }
-        else
-        {
-            LeftLaneChange();
-        }
-    }
 
     ///////////////////////////////////////////////
     /// PRIVATE METHODS
     ///////////////////////////////////////////////
+    private void ChangeToNextBestLane()
+    {
+        if (TrafficGenerator.nextBounceableObjectPositions != null)
+        {
+            float minDistanceAway = 1000; // Set to some large number
+            Vector3 bestObjPos = Vector3.zero;
+
+            foreach (Vector3 objPos in TrafficGenerator.nextBounceableObjectPositions)
+            {
+                float distanceAway = Mathf.Abs(objPos.x) - Mathf.Abs(transform.position.x);
+
+                if (distanceAway < minDistanceAway)
+                {
+                    minDistanceAway = distanceAway;
+                    bestObjPos = objPos;
+                }
+            }
+
+            for (int i = 0; i < lanes.Length; i++)
+            {
+                GameObject lane = lanes[i];
+
+                if (lane.transform.position.x == bestObjPos.x)
+                {
+                    bestLaneIndex = i;
+                    break;
+                }
+            }
+
+            if (bestLaneIndex != -2)
+            {
+                if (currentLaneIndex < bestLaneIndex)
+                {
+                    while (currentLaneIndex < bestLaneIndex)
+                    {
+                        RightLaneChange();
+                    }
+                }
+                else if (currentLaneIndex > bestLaneIndex)
+                {
+                    while (currentLaneIndex > bestLaneIndex)
+                    {
+                        LeftLaneChange();
+                    }
+                }
+            }
+        }
+    }
     private void SkipperMovement()
     {
         if (currentLane == null)
@@ -166,39 +204,6 @@ public class SkipperController : MonoBehaviour {
             currentLaneIndex++;
             rightLaneChange = true;
             currentLane = lanes[currentLaneIndex];
-        }
-    }
-    private void SetStartingRandomLane()
-    {
-        if (skipperNumber == 1)
-        {
-            currentLaneIndex = UnityEngine.Random.Range(0, 1);
-
-            if (currentLaneIndex == 0)
-            {
-                leftLaneChange = true;
-                currentLane = lanes[currentLaneIndex];
-            }
-            else if (currentLaneIndex == 1)
-            {
-                rightLaneChange = true;
-                currentLane = lanes[currentLaneIndex];
-            }
-        }
-        else if (skipperNumber == 2)
-        {
-            currentLaneIndex = UnityEngine.Random.Range(2, 3);
-
-            if (currentLaneIndex == 2)
-            {
-                leftLaneChange = true;
-                currentLane = lanes[currentLaneIndex];
-            }
-            else if (currentLaneIndex == 3)
-            {
-                rightLaneChange = true;
-                currentLane = lanes[currentLaneIndex];
-            }
         }
     }
     private int CompareObjectNames(GameObject x, GameObject y)
