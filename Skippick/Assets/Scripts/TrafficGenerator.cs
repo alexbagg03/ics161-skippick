@@ -8,14 +8,14 @@ public class TrafficGenerator : MonoBehaviour {
     ///////////////////////////////////////////////
     /// MEMBERS
     ///////////////////////////////////////////////
-    public Transform playerTransform;
     public PlayerStats playerStats;
     public GameObject bounceableObject;
+    public float bounceablePercentage = 70;
     
-    private Vector3 currentPosition;
-    private float lastBounceableZPos;
     private List<Vector3> lanePositions;
     private List<List<GameObject>> generatedBounceableObjects;
+    private GameObject player;
+    private float lastBounceableZPos;
     private bool removeTrafficWhenReady = false;
 
     ///////////////////////////////////////////////
@@ -23,17 +23,23 @@ public class TrafficGenerator : MonoBehaviour {
     ///////////////////////////////////////////////
     void Start ()
     {
-        lastBounceableZPos = playerTransform.position.z;
+        player = GameObject.FindGameObjectWithTag("Player");
+
+        lastBounceableZPos = player.transform.position.z + playerStats.bounceDistance;
+
         SetLanePositions();
-        GenerateBounceableTraffic();
+        GenerateTraffic();
     }
 	void Update ()
     {
         if (removeTrafficWhenReady)
         {
-            if (playerTransform.position.z > PlayerController.lastPlayerBounceZPos)
+            float currentZ = player.transform.position.z;
+            float lastBounceZ = PlayerController.lastPlayerBounceZPos;
+
+            if (player.transform.position.z > PlayerController.lastPlayerBounceZPos + 20)
             {
-                RemoveOldTraffic();
+                RemoveOldBounceableTraffic();
                 removeTrafficWhenReady = false;
             }
         }
@@ -42,40 +48,13 @@ public class TrafficGenerator : MonoBehaviour {
     ///////////////////////////////////////////////
     /// PUBLIC METHODS
     ///////////////////////////////////////////////
-    public void GenerateBounceableTraffic()
+    public void GenerateTraffic()
     {
-        if (generatedBounceableObjects == null)
-        {
-            generatedBounceableObjects = new List<List<GameObject>>();
-        }
-
-        generatedBounceableObjects.Add(new List<GameObject>());
-
-        GenerateBounceableTrafficAtZPos(lastBounceableZPos);
-    }
-    public void RemoveOldTrafficWhenReady()
-    {
-        removeTrafficWhenReady = true;
+        GenerateBounceableTraffic();
     }
     public void RemoveOldTraffic()
     {
-        List<GameObject> oldObjects = generatedBounceableObjects[0];
-        List<GameObject> objectsToRemove = new List<GameObject>();
-
-        for (int i = 0; i < lanePositions.Count; i++)
-        {
-            objectsToRemove.Add(oldObjects[i]);
-        }
-        foreach (GameObject obj in objectsToRemove)
-        {
-            oldObjects.Remove(obj);
-            Destroy(obj);
-        }
-
-        if (oldObjects.Count == 0)
-        {
-            generatedBounceableObjects.Remove(oldObjects);
-        }
+        removeTrafficWhenReady = true;
     }
 
     ///////////////////////////////////////////////
@@ -93,22 +72,43 @@ public class TrafficGenerator : MonoBehaviour {
             lanePositions.Add(lane.transform.position);
         }
     }
+    private void GenerateBounceableTraffic()
+    {
+        if (generatedBounceableObjects == null)
+        {
+            generatedBounceableObjects = new List<List<GameObject>>();
+        }
+
+        GenerateBounceableTrafficAtZPos(lastBounceableZPos);
+    }
     private void GenerateBounceableTrafficAtZPos(float zPosition)
     {
+        // Base case: if the zPosition has reached the end of the road, return
         if (zPosition >= lastBounceableZPos + RoadGenerator.ROAD_DISTANCE)
         {
             lastBounceableZPos = zPosition;
             return;
         }
 
-        foreach (Vector3 lanePos in lanePositions)
-        {
-            Vector3 genPos;
-            genPos.x = lanePos.x;
-            genPos.y = bounceableObject.transform.position.y;
-            genPos.z = zPosition;
+        generatedBounceableObjects.Add(new List<GameObject>());
 
-            CreateBounceableObjectAtPosition(genPos);
+        while (generatedBounceableObjects[generatedBounceableObjects.Count-1].Count == 0)
+        {
+            foreach (Vector3 lanePos in lanePositions)
+            {
+                float percentage = UnityEngine.Random.value * 100;
+
+                // Chance to generate a bounceableobject at the lane postion
+                if (percentage <= bounceablePercentage)
+                {
+                    Vector3 genPos;
+                    genPos.x = lanePos.x;
+                    genPos.y = bounceableObject.transform.position.y;
+                    genPos.z = zPosition;
+
+                    CreateBounceableObjectAtPosition(genPos);
+                }
+            }
         }
 
         GenerateBounceableTrafficAtZPos(zPosition + playerStats.bounceDistance);
@@ -118,6 +118,26 @@ public class TrafficGenerator : MonoBehaviour {
         GameObject newObject = GameObject.Instantiate(bounceableObject);
         newObject.transform.position = position;
         generatedBounceableObjects[generatedBounceableObjects.Count-1].Add(newObject);
+    }
+    private void RemoveOldBounceableTraffic()
+    {
+        List<GameObject> oldObjects = generatedBounceableObjects[0];
+        List<GameObject> objectsToRemove = new List<GameObject>();
+
+        for (int i = 0; i < oldObjects.Count; i++)
+        {
+            objectsToRemove.Add(oldObjects[i]);
+        }
+        foreach (GameObject obj in objectsToRemove)
+        {
+            oldObjects.Remove(obj);
+            Destroy(obj);
+        }
+
+        if (oldObjects.Count == 0)
+        {
+            generatedBounceableObjects.Remove(oldObjects);
+        }
     }
     private int CompareObjectNames(GameObject x, GameObject y)
     {

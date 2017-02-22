@@ -12,8 +12,9 @@ public class PlayerController : MonoBehaviour {
     public float driveSpeed = 0.5f;
     public float laneChangeSpeed = 0.25f;
     public float bounceForce = 400f;
-    public float testingJumpForce = 400f;
-    public bool spacebarBouncing;
+    public float resetTime = 1f;
+    public bool controlBouncing;
+    public bool controlAllMovement;
 
     private static int FAR_RIGHT_LANE = 3;
     private static int FAR_LEFT_LANE = 0;
@@ -22,13 +23,14 @@ public class PlayerController : MonoBehaviour {
     private TrafficGenerator trafficGenerator;
     private Vector3 newPosition;
     private Vector3 lanePosition;
-    private Vector3 jumpPoint;
+    private Vector3 resetPosition;
     private int currentLaneIndex = -1;
     private bool leftLaneChange = false;
     private bool rightLaneChange = false;
-    private bool crashed = false;
+    private bool resetting = false;
     private float startHeight;
-    private float previousZ = 0f;
+    private float resetTimer;
+    private float previousZ;
 
     ///////////////////////////////////////////////
     /// MONOBEHAVIOR METHODS
@@ -40,39 +42,70 @@ public class PlayerController : MonoBehaviour {
         Array.Sort(lanes, CompareObjectNames);
 
         trafficGenerator = GameObject.Find("TrafficGenerator").GetComponent<TrafficGenerator>();
-
+ 
         startHeight = transform.position.y;
+        resetPosition = transform.position;
 
         StartPlayerBounce();
     }
 	void Update ()
     {
-        if (crashed)
+        if (resetting)
         {
+            resetTimer += Time.deltaTime;
             return;
         }
 
-        if (!leftLaneChange && !rightLaneChange)
+        if (!controlAllMovement)
         {
-            // Detect any lane changes
-            if (Input.GetAxis("Horizontal") < 0)
+            if (!leftLaneChange && !rightLaneChange)
             {
-                LeftLaneChange();
-            }
-            else if (Input.GetAxis("Horizontal") > 0)
-            {
-                RightLaneChange();
+                // Detect any lane changes
+                if (Input.GetAxis("Horizontal") < 0)
+                {
+                    LeftLaneChange();
+                }
+                else if (Input.GetAxis("Horizontal") > 0)
+                {
+                    RightLaneChange();
+                }
             }
         }
     }
     void FixedUpdate()
     {
-        if (crashed)
+        if (resetting)
         {
             return;
         }
 
-        PlayerMovement();
+        if (controlAllMovement)
+        {
+            newPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z + driveSpeed);
+
+            // Detect any lane changes
+            if (Input.GetAxis("Horizontal") < 0)
+            {
+                if (newPosition.x >= lanes[0].transform.position.x)
+                {
+                    newPosition.x -= Time.deltaTime * laneChangeSpeed * 100;
+                }
+            }
+            else if (Input.GetAxis("Horizontal") > 0)
+            {
+                if (newPosition.x <= lanes[3].transform.position.x)
+                {
+                    newPosition.x += Time.deltaTime * laneChangeSpeed * 100;
+                }
+            }
+
+            // Move to new postion
+            GetComponent<Rigidbody>().MovePosition(newPosition);
+        }
+        else
+        {
+            PlayerMovement();
+        }
     }
 
     ///////////////////////////////////////////////
@@ -80,11 +113,17 @@ public class PlayerController : MonoBehaviour {
     ///////////////////////////////////////////////
     public void Crash()
     {
-        crashed = true;
         GetComponent<Rigidbody>().velocity = Vector3.zero;
+        resetTimer = 0;
+        StartCoroutine("ResetPlayer", resetTime);
+        StartCoroutine("Blink", resetTime);
     }
     public void BouncePlayer()
     {
+        float distance = transform.position.z - previousZ;
+        print("Bounce Distance = " + distance);
+        previousZ = transform.position.z;
+
         // Cancel y velocity
         Vector3 vel = GetComponent<Rigidbody>().velocity;
         vel.y = 0;
@@ -193,6 +232,31 @@ public class PlayerController : MonoBehaviour {
             currentLaneIndex++;
             rightLaneChange = true;
             currentLane = lanes[currentLaneIndex];
+        }
+    }
+    private IEnumerator ResetPlayer()
+    {
+        resetPosition.z = lastPlayerBounceZPos;
+        transform.position = resetPosition;
+        GetComponent<Rigidbody>().useGravity = false;
+        currentLaneIndex = -1;
+        resetting = true;
+
+        yield return new WaitForSeconds(resetTime);
+
+        GetComponent<Rigidbody>().useGravity = true;
+        resetting = false;
+        StartPlayerBounce();
+    } 
+    private IEnumerator Blink(float blinkTime)
+    {
+        while (resetTimer < blinkTime)
+        {
+            Renderer renderer = GetComponent<Renderer>();
+            renderer.enabled = false;
+            yield return new WaitForSeconds(0.2f);
+            renderer.enabled = true;
+            yield return new WaitForSeconds(0.2f);
         }
     }
     private int CompareObjectNames(GameObject x, GameObject y)

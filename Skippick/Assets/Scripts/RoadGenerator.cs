@@ -8,6 +8,7 @@ public class RoadGenerator : MonoBehaviour {
     /// MEMBERS
     ///////////////////////////////////////////////
     public Transform player;
+    public PlayerStats playerStats;
     public GameObject roadSection;
 
     public static float ROAD_DISTANCE = 350;
@@ -36,12 +37,12 @@ public class RoadGenerator : MonoBehaviour {
         if (player.position.z >= currentRoad.transform.position.z)
         {
             GenerateNewRoad();
-            trafficGenerator.GenerateBounceableTraffic();
+            trafficGenerator.GenerateTraffic();
         }
 
         // Remove old road that is too far behind
         previousRoad = roads[0];
-        if (player.position.z >= previousRoad.transform.position.z + ROAD_DISTANCE)
+        if (player.position.z >= previousRoad.transform.position.z + ROAD_DISTANCE + playerStats.bounceDistance)
         {
             RemoveOldRoad();
         }

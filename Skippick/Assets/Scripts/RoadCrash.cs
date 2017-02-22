@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class RoadCrash : MonoBehaviour {
     
-    void OnCollisionEnter(Collision coll)
+    void OnTriggerEnter(Collider other)
     {
-        switch (coll.gameObject.tag)
+        switch (other.gameObject.tag)
         {
             case "Player":
-                coll.gameObject.GetComponent<PlayerController>().Crash();
+                other.gameObject.GetComponent<PlayerController>().Crash();
                 break;
             case "Skipper":
-                coll.gameObject.GetComponent<SkipperController>().Crash();
+                other.gameObject.GetComponent<SkipperController>().Crash();
                 break;
         }
     }

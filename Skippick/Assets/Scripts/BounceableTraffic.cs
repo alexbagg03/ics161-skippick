@@ -5,23 +5,36 @@ using UnityEditor;
 
 public class BounceableTraffic : MonoBehaviour {
 
-    void Start ()
+    public KeyCode bounceKey;
+
+    void OnTriggerEnter(Collider other)
     {
-        // Nothing yet
-    }
-	void Update ()
-    {
-        // Nothing yet
-	}
-    void OnCollisionEnter(Collision coll)
-    {
-        switch (coll.gameObject.tag)
+        switch (other.gameObject.tag)
         {
             case "Player":
-                coll.gameObject.GetComponent<PlayerController>().BouncePlayer();
+                PlayerController playerController = other.gameObject.GetComponent<PlayerController>();
+
+                if (!playerController.controlBouncing)
+                {
+                    playerController.BouncePlayer();
+                }
                 break;
-            case "Skipper":
-                coll.gameObject.GetComponent<SkipperController>().BounceSkipper(true);
+        }
+    }
+    void OnTriggerStay(Collider other)
+    {
+        switch (other.gameObject.tag)
+        {
+            case "Player":
+                PlayerController playerController = other.gameObject.GetComponent<PlayerController>();
+
+                if (playerController.controlBouncing)
+                {
+                    if (Input.GetKeyDown(bounceKey) || Input.GetKeyUp(bounceKey))
+                    {
+                        playerController.BouncePlayer();
+                    }
+                }
                 break;
         }
     }
