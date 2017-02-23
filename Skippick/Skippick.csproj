@@ -75,12 +75,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Game Jam Template\Scripts\DontDestroy.cs" />
+    <Compile Include="Assets\Game Jam Template\Scripts\EventSystemChecker.cs" />
+    <Compile Include="Assets\Game Jam Template\Scripts\Pause.cs" />
+    <Compile Include="Assets\Game Jam Template\Scripts\PlayMusic.cs" />
+    <Compile Include="Assets\Game Jam Template\Scripts\QuitApplication.cs" />
+    <Compile Include="Assets\Game Jam Template\Scripts\SetAudioLevels.cs" />
+    <Compile Include="Assets\Game Jam Template\Scripts\ShowPanels.cs" />
+    <Compile Include="Assets\Game Jam Template\Scripts\StartOptions.cs" />
     <Compile Include="Assets\ScriptableObjects\PlayerStats.cs" />
     <Compile Include="Assets\Scripts\BounceableTraffic.cs" />
     <Compile Include="Assets\Scripts\CameraController.cs" />
     <Compile Include="Assets\Scripts\FinishLine.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\GameOverUIController.cs" />
+    <Compile Include="Assets\Scripts\MainUIController.cs" />
     <Compile Include="Assets\Scripts\NestedPrefabInstance.cs" />
     <Compile Include="Assets\Scripts\PlayerController.cs" />
     <Compile Include="Assets\Scripts\RoadCrash.cs" />
@@ -88,6 +97,10 @@
     <Compile Include="Assets\Scripts\SkipperController.cs" />
     <Compile Include="Assets\Scripts\StartUIController.cs" />
     <Compile Include="Assets\Scripts\TrafficGenerator.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Game Jam Template\Fonts\OpenSans\License!.txt" />
+    <None Include="Assets\Game Jam Template\GameJamTemplateReadMe.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />

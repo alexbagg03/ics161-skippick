@@ -36,6 +36,8 @@ public class GameOverUIController : MonoBehaviour {
     {
         if (GameManager.Instance.gameOver)
         {
+            Cursor.visible = true;
+
             if (Input.GetKey(KeyCode.Space))
             {
                 GameManager.Instance.RestartGame();

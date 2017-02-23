@@ -30,8 +30,6 @@ public class GameManager : MonoBehaviour {
     public bool gameOver = false;
     public bool gamePaused = false;
     public AI_DIFFICULTY AIDifficulty;
-    public AudioClip music1;
-    public AudioClip music2;
 
     private static string NONE = "none";
     private Dictionary<STANDING, string> standings = new Dictionary<STANDING, string>();
@@ -49,8 +47,7 @@ public class GameManager : MonoBehaviour {
         {
             _instance = this;
         }
-
-        PickMusicRandomly();
+        
         AIDifficulty = AI_DIFFICULTY.NOT_SET;
         InitializeStandings();
     }
@@ -127,22 +124,6 @@ public class GameManager : MonoBehaviour {
         standings[STANDING.FIRST_PLACE] = NONE;
         standings[STANDING.SECOND_PLACE] = NONE;
         standings[STANDING.THIRD_PLACE] = NONE;
-    }
-    private void PickMusicRandomly()
-    {
-        AudioSource audioSource = GetComponent<AudioSource>();
-        float percentage = Random.value * 100;
-
-        if (percentage <= 50)
-        {
-            audioSource.clip = music1;
-        }
-        else
-        {
-            audioSource.clip = music2;
-        }
-
-        audioSource.Play();
     }
 
 }

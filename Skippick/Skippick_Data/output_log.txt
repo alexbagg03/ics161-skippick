@@ -1,0 +1,104 @@
+Initialize engine version: 5.5.1f1 (88d00a7498cd)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.0]
+    Renderer: AMD Radeon HD 6700M Series (ID=0x6740)
+    Vendor:   ATI
+    VRAM:     1008 MB
+    Driver:   15.201.1151.1008
+Begin MonoManager ReloadAssembly
+Platform assembly: C:\Users\alexb\Documents\Github\UCI\ics161-skippick\Skippick\Skippick_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading C:\Users\alexb\Documents\Github\UCI\ics161-skippick\Skippick\Skippick_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: C:\Users\alexb\Documents\Github\UCI\ics161-skippick\Skippick\Skippick_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading C:\Users\alexb\Documents\Github\UCI\ics161-skippick\Skippick\Skippick_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: C:\Users\alexb\Documents\Github\UCI\ics161-skippick\Skippick\Skippick_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading C:\Users\alexb\Documents\Github\UCI\ics161-skippick\Skippick\Skippick_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+Platform assembly: C:\Users\alexb\Documents\Github\UCI\ics161-skippick\Skippick\Skippick_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading C:\Users\alexb\Documents\Github\UCI\ics161-skippick\Skippick\Skippick_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+Platform assembly: C:\Users\alexb\Documents\Github\UCI\ics161-skippick\Skippick\Skippick_Data\Managed\UnityEngine.PlaymodeTestsRunner.dll (this message is harmless)
+Loading C:\Users\alexb\Documents\Github\UCI\ics161-skippick\Skippick\Skippick_Data\Managed\UnityEngine.PlaymodeTestsRunner.dll into Unity Child Domain
+- Completed reload, in  0.141 seconds
+Platform assembly: C:\Users\alexb\Documents\Github\UCI\ics161-skippick\Skippick\Skippick_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: C:\Users\alexb\Documents\Github\UCI\ics161-skippick\Skippick\Skippick_Data\Managed\System.dll (this message is harmless)
+desktop: 1440x900 60Hz; virtual: 1440x900 at 0,0
+<RI> Initializing input.
+<RI> Input initialized.
+<RI> Initialized touch support.
+UnloadTime: 3.938951 ms
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 1.571825 ms
+
+Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 2435.
+Total: 0.689487 ms (FindLiveObjects: 0.118185 ms CreateObjectMapping: 0.035839 ms MarkObjects: 0.520528 ms  DeleteObjects: 0.007679 ms)
+
+Bounce Distance = 0
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Setting up 2 worker threads for Enlighten.
+  Thread -> id: 366c -> priority: 1 
+  Thread -> id: 32f0 -> priority: 1 
+Bounce Distance = 101
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Bounce Distance = 101
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Bounce Distance = 101
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Bounce Distance = 101
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Bounce Distance = 202
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Bounce Distance = 101
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Bounce Distance = 101
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Bounce Distance = 101
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Bounce Distance = 201
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Bounce Distance = 201
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Bounce Distance = 200
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Bounce Distance = 202
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Bounce Distance = 101
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Bounce Distance = 201
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Bounce Distance = 202
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Bounce Distance = 201
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+

@@ -123,6 +123,10 @@
     <Compile Include="Assets\Editor\ScriptableObjectFactory.cs" />
     <Compile Include="Assets\Editor\ScriptableObjectWindow.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Game Jam Template\Fonts\OpenSans\License!.txt" />
+    <None Include="Assets\Game Jam Template\GameJamTemplateReadMe.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />
 </Project>

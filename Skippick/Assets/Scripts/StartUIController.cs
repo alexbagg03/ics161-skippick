@@ -15,21 +15,21 @@ public class StartUIController : MonoBehaviour {
     ///////////////////////////////////////////////
     void Start ()
     {
+        Cursor.visible = true;
         GameManager.Instance.PauseGame();
 	}
 	void Update ()
     {
         if (Input.GetKey(KeyCode.Space))
         {
-            HidePanel();
-            GameManager.Instance.ContinueGame();
+            StartGame();
         }
     }
 
     ///////////////////////////////////////////////
     /// PUBLIC METHODS
     ///////////////////////////////////////////////
-    public void HidePanel()
+    public void StartGame()
     {
         switch (AIDifficultyDropdown.value)
         {
@@ -45,6 +45,8 @@ public class StartUIController : MonoBehaviour {
         }
        
         gameObject.SetActive(false);
+        Cursor.visible = false;
+        GameManager.Instance.ContinueGame();
     }
 
 }
