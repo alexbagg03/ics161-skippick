@@ -40,6 +40,8 @@ public class SkipperController : MonoBehaviour {
     private float resetTimer;
     private float startHeight;
     private float lastBounceZPos = 0f;
+    private float initialDriveSpeed;
+    private float boostSpeed;
 
     ///////////////////////////////////////////////
     /// MONOBEHAVIOR METHODS
@@ -59,6 +61,8 @@ public class SkipperController : MonoBehaviour {
         trafficGenerator = GameObject.Find("TrafficGenerator").GetComponent<TrafficGenerator>();
         startHeight = transform.position.y;
         resetPosition = transform.position;
+        initialDriveSpeed = driveSpeed;
+        boostSpeed = driveSpeed * 2;
 
         SetCurrentLaneIndex();
         BounceSkipper();
@@ -142,12 +146,6 @@ public class SkipperController : MonoBehaviour {
             failedAttemps = 0;
         }
 
-        if (boosted)
-        {
-            driveSpeed /= 2;
-            boosted = false;
-        }
-
         ChangeToNextBestLane();
         lastBounceZPos = transform.position.z;
         previousBounceIndex = nextBounceIndex;
@@ -157,8 +155,13 @@ public class SkipperController : MonoBehaviour {
     {
         previousBounceIndex = nextBounceIndex;
         nextBounceIndex++;
-        driveSpeed *= 2;
+        driveSpeed = boostSpeed;
         boosted = true;
+    }
+    public void ResetSpeed()
+    {
+        driveSpeed = initialDriveSpeed;
+        boosted = false;
     }
 
     ///////////////////////////////////////////////

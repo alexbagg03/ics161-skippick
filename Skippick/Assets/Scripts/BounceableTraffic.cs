@@ -17,7 +17,11 @@ public class BounceableTraffic : MonoBehaviour {
                 break;
             case "Skipper":
                 SkipperController skipper = other.gameObject.GetComponent<SkipperController>();
-                skipper.BounceSkipper();
+
+                if (skipper.boosted)
+                {
+                    skipper.ResetSpeed();
+                }
 
                 float boostChance = Random.value * 100;
 
@@ -25,6 +29,8 @@ public class BounceableTraffic : MonoBehaviour {
                 {
                     skipper.Boost();
                 }
+
+                skipper.BounceSkipper();
                 break;
         }
     }
