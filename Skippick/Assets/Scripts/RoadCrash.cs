@@ -9,7 +9,7 @@ public class RoadCrash : MonoBehaviour {
         switch (other.gameObject.tag)
         {
             case "Player":
-                other.gameObject.GetComponent<PlayerController>().Crash();
+                other.gameObject.GetComponent<PlayerController>().ResetPlayer();
                 break;
             case "Skipper":
                 other.gameObject.GetComponent<SkipperController>().Crash();

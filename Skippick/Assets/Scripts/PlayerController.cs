@@ -28,9 +28,18 @@ public class PlayerController : MonoBehaviour {
     private bool leftLaneChange = false;
     private bool rightLaneChange = false;
     private bool resetting = false;
+    private bool moveLeft = false;
+    private bool moveRight = false;
     private float startHeight;
     private float resetTimer;
     private float previousZ;
+    private enum MOVE_STATE
+    {
+        LEFT,
+        RIGHT,
+        STILL
+    }
+    private MOVE_STATE currentMoveState;
 
     ///////////////////////////////////////////////
     /// MONOBEHAVIOR METHODS
@@ -64,7 +73,6 @@ public class PlayerController : MonoBehaviour {
         {
             if (!leftLaneChange && !rightLaneChange)
             {
-                // Detect any lane changes
                 if (Input.GetAxis("Horizontal") < 0)
                 {
                     LeftLaneChange();
@@ -73,6 +81,21 @@ public class PlayerController : MonoBehaviour {
                 {
                     RightLaneChange();
                 }
+            }
+        }
+        else
+        {
+            if (Input.GetAxis("Horizontal") < 0)
+            {
+                currentMoveState = MOVE_STATE.LEFT;
+            }
+            else if (Input.GetAxis("Horizontal") > 0)
+            {
+                currentMoveState = MOVE_STATE.RIGHT;
+            }
+            else
+            {
+                currentMoveState = MOVE_STATE.STILL;
             }
         }
     }
@@ -92,41 +115,22 @@ public class PlayerController : MonoBehaviour {
 
         if (controlAllMovement)
         {
-            newPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z + driveSpeed);
-
-            // Detect any lane changes
-            if (Input.GetAxis("Horizontal") < 0)
-            {
-                if (newPosition.x >= lanes[0].transform.position.x)
-                {
-                    newPosition.x -= Time.deltaTime * laneChangeSpeed * 100;
-                }
-            }
-            else if (Input.GetAxis("Horizontal") > 0)
-            {
-                if (newPosition.x <= lanes[3].transform.position.x)
-                {
-                    newPosition.x += Time.deltaTime * laneChangeSpeed * 100;
-                }
-            }
-
-            // Move to new postion
-            GetComponent<Rigidbody>().MovePosition(newPosition);
+            PlayerControlledMovement();
         }
         else
         {
-            PlayerMovement();
+            DefaultControlledMovement();
         }
     }
 
     ///////////////////////////////////////////////
     /// PUBLIC METHODS
     ///////////////////////////////////////////////
-    public void Crash()
+    public void ResetPlayer()
     {
         GetComponent<Rigidbody>().velocity = Vector3.zero;
         resetTimer = 0;
-        StartCoroutine("ResetPlayer", resetTime);
+        StartCoroutine("BeginResettingPlayer", resetTime);
         StartCoroutine("Blink", resetTime);
     }
     public void BouncePlayer()
@@ -155,7 +159,29 @@ public class PlayerController : MonoBehaviour {
     ///////////////////////////////////////////////
     /// PRIVATE METHODS
     ///////////////////////////////////////////////
-    private void PlayerMovement()
+    private void PlayerControlledMovement()
+    {
+        newPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z + driveSpeed);
+
+        if (currentMoveState == MOVE_STATE.LEFT)
+        {
+            if (newPosition.x >= lanes[0].transform.position.x)
+            {
+                newPosition.x -= Time.deltaTime * laneChangeSpeed * 100;
+            }
+        }
+        else if (currentMoveState == MOVE_STATE.RIGHT)
+        {
+            if (newPosition.x <= lanes[3].transform.position.x)
+            {
+                newPosition.x += Time.deltaTime * laneChangeSpeed * 100;
+            }
+        }
+
+        // Move to new postion
+        GetComponent<Rigidbody>().MovePosition(newPosition);
+    }
+    private void DefaultControlledMovement()
     {
         if (currentLane == null)
         {
@@ -244,7 +270,15 @@ public class PlayerController : MonoBehaviour {
             currentLane = lanes[currentLaneIndex];
         }
     }
-    private IEnumerator ResetPlayer()
+    private int CompareObjectNames(GameObject x, GameObject y)
+    {
+        return x.name.CompareTo(y.name);
+    }
+
+    ///////////////////////////////////////////////
+    /// COROUTINES
+    ///////////////////////////////////////////////
+    private IEnumerator BeginResettingPlayer()
     {
         resetPosition.z = lastPlayerBounceZPos;
         transform.position = resetPosition;
@@ -269,10 +303,5 @@ public class PlayerController : MonoBehaviour {
             yield return new WaitForSeconds(0.2f);
         }
     }
-    private int CompareObjectNames(GameObject x, GameObject y)
-    {
-        return x.name.CompareTo(y.name);
-    }
-
 
 }

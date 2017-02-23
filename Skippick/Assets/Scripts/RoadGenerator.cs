@@ -18,7 +18,6 @@ public class RoadGenerator : MonoBehaviour {
     public static float ROAD_DISTANCE = 350;
     private List<GameObject> roads;
     private GameObject currentRoad;
-    private GameObject previousRoad;
     private TrafficGenerator trafficGenerator;
     private string originalName;
     private int roadNumber = 0;
@@ -26,7 +25,7 @@ public class RoadGenerator : MonoBehaviour {
     ///////////////////////////////////////////////
     /// MONOBEHAVIOR METHODS
     ///////////////////////////////////////////////
-    void Start ()
+    void Awake ()
     {
         originalName = roadSection.name;
 
@@ -44,19 +43,6 @@ public class RoadGenerator : MonoBehaviour {
 
         GenerateFinishLine();
         trafficGenerator.GenerateTraffic();
-    }
-	void Update ()
-    {
-        // Remove old road that is too far behind
-        previousRoad = roads[0];
-
-        bool playerBeyondRoad = player.position.z >= previousRoad.transform.position.z + ROAD_DISTANCE + playerStats.bounceDistance;
-        bool skipper1BeyondRoad = skipper1.position.z >= previousRoad.transform.position.z + ROAD_DISTANCE + playerStats.bounceDistance;
-        bool skipper2BeyondRoad = skipper2.position.z >= previousRoad.transform.position.z + ROAD_DISTANCE + playerStats.bounceDistance;
-        if (playerBeyondRoad && skipper1BeyondRoad && skipper2BeyondRoad)
-        {
-            RemoveOldRoad();
-        }
     }
 
     ///////////////////////////////////////////////
@@ -95,11 +81,6 @@ public class RoadGenerator : MonoBehaviour {
         nextRoadPos.z += ROAD_DISTANCE;
         nextRoad.transform.position = nextRoadPos;
         roads.Add(nextRoad);
-    }
-    private void RemoveOldRoad()
-    {
-        roads.Remove(previousRoad);
-        Destroy(previousRoad);
     }
 
 }

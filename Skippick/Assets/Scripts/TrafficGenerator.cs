@@ -11,7 +11,6 @@ public class TrafficGenerator : MonoBehaviour {
     public PlayerStats playerStats;
     public GameObject bounceableObject;
     public float bounceablePercentage = 70;
-    public static List<Vector3> nextBounceableObjectPositions;
     
     private List<Vector3> lanePositions;
     private List<List<GameObject>> generatedBounceableObjects;
@@ -30,14 +29,7 @@ public class TrafficGenerator : MonoBehaviour {
     }
 	void Update ()
     {
-        nextBounceableObjectPositions = new List<Vector3>();
-        if (generatedBounceableObjects != null)
-        {
-            foreach (GameObject obj in generatedBounceableObjects[0])
-            {
-                nextBounceableObjectPositions.Add(obj.transform.position);
-            }
-        }
+        // Nothing yet
 	}
 
     ///////////////////////////////////////////////
@@ -48,9 +40,23 @@ public class TrafficGenerator : MonoBehaviour {
         SetLanePositions();
         GenerateBounceableTraffic();
     }
-    public void RemoveOldTraffic()
+    public List<GameObject> GetBounceableObjectsAtIndex(int index)
     {
-        RemoveOldBounceableTraffic();
+        if (generatedBounceableObjects == null)
+        {
+            return null;
+        }
+
+        return generatedBounceableObjects[index];
+    }
+    public int GetListCount()
+    {
+        if (generatedBounceableObjects == null)
+        {
+            return 0;
+        }
+
+        return generatedBounceableObjects.Count; 
     }
 
     ///////////////////////////////////////////////
@@ -114,26 +120,6 @@ public class TrafficGenerator : MonoBehaviour {
         GameObject newObject = GameObject.Instantiate(bounceableObject);
         newObject.transform.position = position;
         generatedBounceableObjects[generatedBounceableObjects.Count-1].Add(newObject);
-    }
-    private void RemoveOldBounceableTraffic()
-    {
-        List<GameObject> oldObjects = generatedBounceableObjects[0];
-        List<GameObject> objectsToRemove = new List<GameObject>();
-
-        for (int i = 0; i < oldObjects.Count; i++)
-        {
-            objectsToRemove.Add(oldObjects[i]);
-        }
-        foreach (GameObject obj in objectsToRemove)
-        {
-            oldObjects.Remove(obj);
-            Destroy(obj);
-        }
-
-        if (oldObjects.Count == 0)
-        {
-            generatedBounceableObjects.Remove(oldObjects);
-        }
     }
     private int CompareObjectNames(GameObject x, GameObject y)
     {

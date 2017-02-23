@@ -8,19 +8,21 @@ public class SkipperController : MonoBehaviour {
     ///////////////////////////////////////////////
     /// MEMBERS
     ///////////////////////////////////////////////
-    public int skipperNumber = 0;
     public float driveSpeed = 0.5f;
     public float laneChangeSpeed = 0.25f;
-    public float bounceForce = 400f;
+    public float bounceForce = 500f;
+    public bool finished = false;
 
     private int FAR_RIGHT_LANE = 3;
     private int FAR_LEFT_LANE = 0;
     private GameObject[] lanes;
     private GameObject currentLane;
+    private TrafficGenerator trafficGenerator;
     private Vector3 newPosition;
     private Vector3 lanePosition;
     private int currentLaneIndex = -1;
-    private int bestLaneIndex = -2;
+    private int bestLaneIndex = -1;
+    private int nextBounceIndex = 1;
     private bool leftLaneChange = false;
     private bool rightLaneChange = false;
     private bool crashed = false;
@@ -35,19 +37,14 @@ public class SkipperController : MonoBehaviour {
         lanes = GameObject.FindGameObjectsWithTag("Lane");
         Array.Sort(lanes, CompareObjectNames);
 
+        trafficGenerator = GameObject.Find("TrafficGenerator").GetComponent<TrafficGenerator>();
         startHeight = transform.position.y;
-
-        // If the number wasn't set in the editor, try to grab it from the gameObject name
-        if (skipperNumber == 0)
-        {
-            skipperNumber = int.Parse("" + name[name.Length - 1]);
-        }
         
         BounceSkipper();
     }
 	void Update ()
     {
-        if (GameManager.Instance.gameOver)
+        if (finished)
         {
             return;
         }
@@ -56,11 +53,11 @@ public class SkipperController : MonoBehaviour {
             return;
         }
 
-        ChangeToNextBestLane();
+        //ChangeToNextBestLane();
     }
     void FixedUpdate()
     {
-        if (GameManager.Instance.gameOver)
+        if (finished)
         {
             return;
         }
@@ -80,6 +77,13 @@ public class SkipperController : MonoBehaviour {
         crashed = true;
         GetComponent<Rigidbody>().velocity = Vector3.zero;
     }
+    public void Finish()
+    {
+        finished = true;
+        Rigidbody rb = GetComponent<Rigidbody>();
+        rb.velocity = Vector3.zero;
+        rb.useGravity = false;
+    }
     public void BounceSkipper()
     {
         // Cancel y velocity
@@ -94,6 +98,9 @@ public class SkipperController : MonoBehaviour {
 
         // Apply the bounce force
         GetComponent<Rigidbody>().AddForce(new Vector3(0, bounceForce, 0));
+        
+        ChangeToNextBestLane();
+        nextBounceIndex++;
     }
 
     ///////////////////////////////////////////////
@@ -101,21 +108,30 @@ public class SkipperController : MonoBehaviour {
     ///////////////////////////////////////////////
     private void ChangeToNextBestLane()
     {
-        if (TrafficGenerator.nextBounceableObjectPositions != null)
+        if (nextBounceIndex > trafficGenerator.GetListCount() - 1)
+        {
+            return;
+        }
+
+        List<GameObject> bounceableObjects = trafficGenerator.GetBounceableObjectsAtIndex(nextBounceIndex);
+
+        if (bounceableObjects != null)
         {
             float minDistanceAway = 1000; // Set to some large number
             Vector3 bestObjPos = Vector3.zero;
 
-            foreach (Vector3 objPos in TrafficGenerator.nextBounceableObjectPositions)
+            foreach (GameObject obj in bounceableObjects)
             {
-                float distanceAway = Mathf.Abs(objPos.x) - Mathf.Abs(transform.position.x);
+                float distanceAway = Mathf.Abs(obj.transform.position.x) - Mathf.Abs(transform.position.x);
 
                 if (distanceAway < minDistanceAway)
                 {
                     minDistanceAway = distanceAway;
-                    bestObjPos = objPos;
+                    bestObjPos = obj.transform.position;
                 }
             }
+
+            print("Best obj pos x = " + bestObjPos.x);
 
             for (int i = 0; i < lanes.Length; i++)
             {
@@ -128,7 +144,9 @@ public class SkipperController : MonoBehaviour {
                 }
             }
 
-            if (bestLaneIndex != -2)
+            print("Best lane index = " + bestLaneIndex);
+
+            if (bestLaneIndex != -1)
             {
                 if (currentLaneIndex < bestLaneIndex)
                 {
@@ -161,7 +179,7 @@ public class SkipperController : MonoBehaviour {
         // If the player is changing lanes, do the lane change movement
         if (leftLaneChange)
         {
-            newPosition = new Vector3(transform.position.x - 0.25f, transform.position.y, transform.position.z + driveSpeed);
+            newPosition = new Vector3(transform.position.x - laneChangeSpeed, transform.position.y, transform.position.z + driveSpeed);
 
             // If the player has reached the chosen lane, movement setup is over
             if (newPosition.x <= lanePosition.x)
@@ -171,7 +189,7 @@ public class SkipperController : MonoBehaviour {
         }
         else if (rightLaneChange)
         {
-            newPosition = new Vector3(transform.position.x + 0.25f, transform.position.y, transform.position.z + driveSpeed);
+            newPosition = new Vector3(transform.position.x + laneChangeSpeed, transform.position.y, transform.position.z + driveSpeed);
 
             // If the player has reached the chosen lane, movement setup is over
             if (newPosition.x >= lanePosition.x)
