@@ -52,7 +52,7 @@ public class PlayerController : MonoBehaviour {
         startHeight = transform.position.y;
         resetPosition = transform.position;
 
-        StartPlayerBounce();
+        BouncePlayer();
     }
 	void Update ()
     {
@@ -122,6 +122,8 @@ public class PlayerController : MonoBehaviour {
         // Save this as the last bounce z position of the player, then use that to remove old traffic
         lastBounceZPos = transform.position.z;
 
+        GetComponent<Animator>().Play("Jumping");
+
         // Apply the bounce force
         GetComponent<Rigidbody>().AddForce(new Vector3(0, bounceForce, 0));
     }
@@ -138,6 +140,8 @@ public class PlayerController : MonoBehaviour {
         rb.velocity = Vector3.zero;
         rb.useGravity = false;
 
+        GetComponent<Animator>().enabled = false;
+
         GameManager.Instance.SetStandingOfSkipper(gameObject.name);
         GameManager.Instance.GameOver();
     }
@@ -152,6 +156,8 @@ public class PlayerController : MonoBehaviour {
         Rigidbody rb = GetComponent<Rigidbody>();
         rb.velocity = Vector3.zero;
         rb.useGravity = false;
+
+        GetComponent<Animator>().enabled = false;
 
         GameManager.Instance.TieGame();
         GameManager.Instance.GameOver();
@@ -181,24 +187,6 @@ public class PlayerController : MonoBehaviour {
 
         // Move to new postion
         GetComponent<Rigidbody>().MovePosition(newPosition);
-    }
-    private void StartPlayerBounce()
-    {
-        // Cancel y velocity
-        Vector3 vel = GetComponent<Rigidbody>().velocity;
-        vel.y = 0;
-        GetComponent<Rigidbody>().velocity = vel;
-
-        // Set player y position to a fixed position (for consistent bouncing distance)
-        Vector3 pos = transform.position;
-        pos.y = startHeight;
-        transform.position = pos;
-
-        // Save this as the last bounce z position of the player, then use that to remove old traffic
-        lastBounceZPos = transform.position.z;
-
-        // Apply the bounce force
-        GetComponent<Rigidbody>().AddForce(new Vector3(0, bounceForce, 0));
     }
     private void LeftLaneChange()
     {
@@ -250,13 +238,13 @@ public class PlayerController : MonoBehaviour {
 
         GetComponent<Rigidbody>().useGravity = true;
         resetting = false;
-        StartPlayerBounce();
+        BouncePlayer();
     } 
     private IEnumerator Blink(float blinkTime)
     {
         while (resetTimer < blinkTime)
         {
-            Renderer renderer = GetComponent<Renderer>();
+            Renderer renderer = GetComponentInChildren<Renderer>();
             renderer.enabled = false;
             yield return new WaitForSeconds(0.2f);
             renderer.enabled = true;

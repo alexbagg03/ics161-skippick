@@ -25,9 +25,9 @@ public class FinishLine : MonoBehaviour {
     }
 	void Update ()
     {
-        bool playerCrossed = player.transform.position.z >= transform.position.z;
-        bool skipper1Crossed = skipper1.transform.position.z >= transform.position.z;
-        bool skipper2Crossed = skipper2.transform.position.z >= transform.position.z;
+        bool playerCrossed = player.transform.position.z >= transform.position.z && !player.GetComponent<PlayerController>().finished;
+        bool skipper1Crossed = skipper1.transform.position.z >= transform.position.z && !skipper1.GetComponent<SkipperController>().finished;
+        bool skipper2Crossed = skipper2.transform.position.z >= transform.position.z && !skipper2.GetComponent<SkipperController>().finished;
 
         if (playerCrossed && skipper1Crossed && skipper2Crossed)
         {

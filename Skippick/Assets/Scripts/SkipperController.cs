@@ -110,6 +110,8 @@ public class SkipperController : MonoBehaviour {
         rb.velocity = Vector3.zero;
         rb.useGravity = false;
 
+        GetComponent<Animator>().enabled = false;
+
         GameManager.Instance.SetStandingOfSkipper(gameObject.name);
     }
     public void BounceSkipper()
@@ -122,6 +124,8 @@ public class SkipperController : MonoBehaviour {
         Vector3 pos = transform.position;
         pos.y = startHeight;
         transform.position = pos;
+
+        GetComponent<Animator>().Play("Jumping");
 
         // Apply the bounce force
         GetComponent<Rigidbody>().AddForce(new Vector3(0, bounceForce, 0));
@@ -338,7 +342,7 @@ public class SkipperController : MonoBehaviour {
     {
         while (resetTimer < blinkTime)
         {
-            Renderer renderer = GetComponent<Renderer>();
+            Renderer renderer = GetComponentInChildren<Renderer>();
             renderer.enabled = false;
             yield return new WaitForSeconds(0.2f);
             renderer.enabled = true;
