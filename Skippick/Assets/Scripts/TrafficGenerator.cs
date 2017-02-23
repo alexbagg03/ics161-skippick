@@ -11,21 +11,19 @@ public class TrafficGenerator : MonoBehaviour {
     public PlayerStats playerStats;
     public GameObject bounceableObject;
     public float bounceablePercentage = 70;
-    
+    [HideInInspector]
+    public float lastBounceableZPos;
+
     private List<Vector3> lanePositions;
-    private List<List<GameObject>> generatedBounceableObjects;
+    private List<List<GameObject>> generatedBounceableObjects = new List<List<GameObject>>();
     private GameObject player;
-    private float lastBounceableZPos;
-    private bool removeTrafficWhenReady = false;
 
     ///////////////////////////////////////////////
     /// MONOBEHAVIOR METHODS
     ///////////////////////////////////////////////
-    void Start ()
+    void Awake()
     {
         player = GameObject.FindGameObjectWithTag("Player");
-
-        lastBounceableZPos = player.transform.position.z + playerStats.bounceDistance;
     }
 	void Update ()
     {
@@ -42,7 +40,7 @@ public class TrafficGenerator : MonoBehaviour {
     }
     public List<GameObject> GetBounceableObjectsAtIndex(int index)
     {
-        if (generatedBounceableObjects == null)
+        if (generatedBounceableObjects.Count == 0)
         {
             return null;
         }
@@ -51,10 +49,6 @@ public class TrafficGenerator : MonoBehaviour {
     }
     public int GetListCount()
     {
-        if (generatedBounceableObjects == null)
-        {
-            return 0;
-        }
 
         return generatedBounceableObjects.Count; 
     }
@@ -76,11 +70,6 @@ public class TrafficGenerator : MonoBehaviour {
     }
     private void GenerateBounceableTraffic()
     {
-        if (generatedBounceableObjects == null)
-        {
-            generatedBounceableObjects = new List<List<GameObject>>();
-        }
-
         GenerateBounceableTrafficAtZPos(lastBounceableZPos);
     }
     private void GenerateBounceableTrafficAtZPos(float zPosition)

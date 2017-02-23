@@ -12,7 +12,7 @@ public class RoadCrash : MonoBehaviour {
                 other.gameObject.GetComponent<PlayerController>().ResetPlayer();
                 break;
             case "Skipper":
-                other.gameObject.GetComponent<SkipperController>().Crash();
+                other.gameObject.GetComponent<SkipperController>().ResetSkipper();
                 break;
         }
     }

@@ -80,11 +80,13 @@
     <Compile Include="Assets\Scripts\CameraController.cs" />
     <Compile Include="Assets\Scripts\FinishLine.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
+    <Compile Include="Assets\Scripts\GameOverUIController.cs" />
     <Compile Include="Assets\Scripts\NestedPrefabInstance.cs" />
     <Compile Include="Assets\Scripts\PlayerController.cs" />
     <Compile Include="Assets\Scripts\RoadCrash.cs" />
     <Compile Include="Assets\Scripts\RoadGenerator.cs" />
     <Compile Include="Assets\Scripts\SkipperController.cs" />
+    <Compile Include="Assets\Scripts\StartUIController.cs" />
     <Compile Include="Assets\Scripts\TrafficGenerator.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -34,6 +34,7 @@ public class RoadGenerator : MonoBehaviour {
         roads.Add(currentRoad);
 
         trafficGenerator = GameObject.Find("TrafficGenerator").GetComponent<TrafficGenerator>();
+        trafficGenerator.lastBounceableZPos = player.transform.position.z + playerStats.bounceDistance;
 
         for (int i = 0; i < raceLength; i++)
         {

@@ -8,13 +8,11 @@ public class PlayerController : MonoBehaviour {
     ///////////////////////////////////////////////
     /// MEMBERS
     ///////////////////////////////////////////////
-    public static float lastPlayerBounceZPos = 0f;
     public float driveSpeed = 0.5f;
     public float laneChangeSpeed = 0.25f;
     public float bounceForce = 400f;
     public float resetTime = 1f;
-    public bool controlBouncing;
-    public bool controlAllMovement;
+    public bool finished = false;
 
     private static int FAR_RIGHT_LANE = 3;
     private static int FAR_LEFT_LANE = 0;
@@ -28,11 +26,10 @@ public class PlayerController : MonoBehaviour {
     private bool leftLaneChange = false;
     private bool rightLaneChange = false;
     private bool resetting = false;
-    private bool moveLeft = false;
-    private bool moveRight = false;
     private float startHeight;
     private float resetTimer;
     private float previousZ;
+    private float lastBounceZPos = 0f;
     private enum MOVE_STATE
     {
         LEFT,
@@ -59,7 +56,7 @@ public class PlayerController : MonoBehaviour {
     }
 	void Update ()
     {
-        if (GameManager.Instance.gameOver)
+        if (finished)
         {
             return;
         }
@@ -69,43 +66,23 @@ public class PlayerController : MonoBehaviour {
             return;
         }
 
-        if (!controlAllMovement)
+        if (Input.GetAxis("Horizontal") < 0)
         {
-            if (!leftLaneChange && !rightLaneChange)
-            {
-                if (Input.GetAxis("Horizontal") < 0)
-                {
-                    LeftLaneChange();
-                }
-                else if (Input.GetAxis("Horizontal") > 0)
-                {
-                    RightLaneChange();
-                }
-            }
+            currentMoveState = MOVE_STATE.LEFT;
+        }
+        else if (Input.GetAxis("Horizontal") > 0)
+        {
+            currentMoveState = MOVE_STATE.RIGHT;
         }
         else
         {
-            if (Input.GetAxis("Horizontal") < 0)
-            {
-                currentMoveState = MOVE_STATE.LEFT;
-            }
-            else if (Input.GetAxis("Horizontal") > 0)
-            {
-                currentMoveState = MOVE_STATE.RIGHT;
-            }
-            else
-            {
-                currentMoveState = MOVE_STATE.STILL;
-            }
+            currentMoveState = MOVE_STATE.STILL;
         }
     }
     void FixedUpdate()
     {
-        if (GameManager.Instance.gameOver)
+        if (finished)
         {
-            Rigidbody rb = GetComponent<Rigidbody>();
-            rb.velocity = Vector3.zero;
-            rb.useGravity = false;
             return;
         }
         if (resetting)
@@ -113,14 +90,7 @@ public class PlayerController : MonoBehaviour {
             return;
         }
 
-        if (controlAllMovement)
-        {
-            PlayerControlledMovement();
-        }
-        else
-        {
-            DefaultControlledMovement();
-        }
+        PlayerMovement();
     }
 
     ///////////////////////////////////////////////
@@ -150,16 +120,47 @@ public class PlayerController : MonoBehaviour {
         transform.position = pos;
 
         // Save this as the last bounce z position of the player, then use that to remove old traffic
-        lastPlayerBounceZPos = transform.position.z;
+        lastBounceZPos = transform.position.z;
 
         // Apply the bounce force
         GetComponent<Rigidbody>().AddForce(new Vector3(0, bounceForce, 0));
+    }
+    public void Finish()
+    {
+        if (finished)
+        {
+            return;
+        }
+
+        finished = true;
+
+        Rigidbody rb = GetComponent<Rigidbody>();
+        rb.velocity = Vector3.zero;
+        rb.useGravity = false;
+
+        GameManager.Instance.SetStandingOfSkipper(gameObject.name);
+        GameManager.Instance.GameOver();
+    }
+    public void TieFinish()
+    {
+        if (finished)
+        {
+            return;
+        }
+
+        finished = true;
+        Rigidbody rb = GetComponent<Rigidbody>();
+        rb.velocity = Vector3.zero;
+        rb.useGravity = false;
+
+        GameManager.Instance.TieGame();
+        GameManager.Instance.GameOver();
     }
 
     ///////////////////////////////////////////////
     /// PRIVATE METHODS
     ///////////////////////////////////////////////
-    private void PlayerControlledMovement()
+    private void PlayerMovement()
     {
         newPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z + driveSpeed);
 
@@ -181,47 +182,6 @@ public class PlayerController : MonoBehaviour {
         // Move to new postion
         GetComponent<Rigidbody>().MovePosition(newPosition);
     }
-    private void DefaultControlledMovement()
-    {
-        if (currentLane == null)
-        {
-            lanePosition = transform.position;
-        }
-        else
-        {
-            lanePosition = currentLane.transform.position;
-        }
-        
-        // If the player is changing lanes, do the lane change movement
-        if (leftLaneChange)
-        {
-            newPosition = new Vector3(transform.position.x - 0.25f, transform.position.y, transform.position.z + driveSpeed);
-
-            // If the player has reached the chosen lane, movement setup is over
-            if (newPosition.x <= lanePosition.x)
-            {
-                leftLaneChange = false;
-            }
-        }
-        else if (rightLaneChange)
-        {
-            newPosition = new Vector3(transform.position.x + 0.25f, transform.position.y, transform.position.z + driveSpeed);
-
-            // If the player has reached the chosen lane, movement setup is over
-            if (newPosition.x >= lanePosition.x)
-            {
-                rightLaneChange = false;
-            }
-        }
-        // Otherwise, proceed with standard movement
-        else
-        {
-            newPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z + driveSpeed);
-        }
-
-        // Move to new postion
-        GetComponent<Rigidbody>().MovePosition(newPosition);
-    }
     private void StartPlayerBounce()
     {
         // Cancel y velocity
@@ -235,7 +195,7 @@ public class PlayerController : MonoBehaviour {
         transform.position = pos;
 
         // Save this as the last bounce z position of the player, then use that to remove old traffic
-        lastPlayerBounceZPos = transform.position.z;
+        lastBounceZPos = transform.position.z;
 
         // Apply the bounce force
         GetComponent<Rigidbody>().AddForce(new Vector3(0, bounceForce, 0));
@@ -280,7 +240,7 @@ public class PlayerController : MonoBehaviour {
     ///////////////////////////////////////////////
     private IEnumerator BeginResettingPlayer()
     {
-        resetPosition.z = lastPlayerBounceZPos;
+        resetPosition.z = lastBounceZPos;
         transform.position = resetPosition;
         GetComponent<Rigidbody>().useGravity = false;
         currentLaneIndex = -1;

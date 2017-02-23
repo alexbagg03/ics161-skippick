@@ -25,15 +25,35 @@ public class FinishLine : MonoBehaviour {
     }
 	void Update ()
     {
-        if (player.transform.position.z >= transform.position.z)
+        bool playerCrossed = player.transform.position.z >= transform.position.z;
+        bool skipper1Crossed = skipper1.transform.position.z >= transform.position.z;
+        bool skipper2Crossed = skipper2.transform.position.z >= transform.position.z;
+
+        if (playerCrossed && skipper1Crossed && skipper2Crossed)
         {
-            GameManager.Instance.GameOver();
+            player.GetComponent<PlayerController>().TieFinish();
+            skipper1.GetComponent<SkipperController>().Finish();
+            skipper2.GetComponent<SkipperController>().Finish();
         }
-        if (skipper1.transform.position.z >= transform.position.z)
+        else if (playerCrossed && skipper1Crossed)
+        {
+            player.GetComponent<PlayerController>().TieFinish();
+            skipper1.GetComponent<SkipperController>().Finish();
+        }
+        else if(playerCrossed && skipper2Crossed)
+        {
+            player.GetComponent<PlayerController>().TieFinish();
+            skipper2.GetComponent<SkipperController>().Finish();
+        }
+        else if (playerCrossed)
+        {
+            player.GetComponent<PlayerController>().Finish();
+        }
+        else if (skipper1Crossed)
         {
             skipper1.GetComponent<SkipperController>().Finish();
         }
-        if (skipper2.transform.position.z >= transform.position.z)
+        else if (skipper2Crossed)
         {
             skipper2.GetComponent<SkipperController>().Finish();
         }
