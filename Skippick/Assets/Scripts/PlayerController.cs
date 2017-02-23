@@ -21,16 +21,15 @@ public class PlayerController : MonoBehaviour {
     private GameObject currentLane;
     private TrafficGenerator trafficGenerator;
     private Vector3 newPosition;
-    private Vector3 lanePosition;
     private Vector3 resetPosition;
     private int currentLaneIndex = -1;
-    private bool leftLaneChange = false;
-    private bool rightLaneChange = false;
     private bool resetting = false;
     private float startHeight;
     private float resetTimer;
     private float previousZ;
     private float lastBounceZPos = 0f;
+    private float boostSpeed;
+    private float initialDriveSpeed;
     private enum MOVE_STATE
     {
         LEFT,
@@ -52,6 +51,8 @@ public class PlayerController : MonoBehaviour {
  
         startHeight = transform.position.y;
         resetPosition = transform.position;
+        initialDriveSpeed = driveSpeed;
+        boostSpeed = driveSpeed * 2;
 
         BouncePlayer();
     }
@@ -123,12 +124,6 @@ public class PlayerController : MonoBehaviour {
         // Save this as the last bounce z position of the player, then use that to remove old traffic
         lastBounceZPos = transform.position.z;
 
-        if (boosted)
-        {
-            driveSpeed /= 2;
-            boosted = false;
-        }
-
         GetComponent<Animator>().Play("Jumping");
 
         // Apply the bounce force
@@ -171,8 +166,13 @@ public class PlayerController : MonoBehaviour {
     }
     public void Boost()
     {
-        driveSpeed *= 2;
+        driveSpeed = boostSpeed;
         boosted = true;
+    }
+    public void ResetSpeed()
+    {
+        driveSpeed = initialDriveSpeed;
+        boosted = false;
     }
 
     ///////////////////////////////////////////////
@@ -205,13 +205,11 @@ public class PlayerController : MonoBehaviour {
         if (currentLaneIndex == -1)
         {
             currentLaneIndex = 1;
-            leftLaneChange = true;
             currentLane = lanes[currentLaneIndex];
         }
         else if (currentLaneIndex != FAR_LEFT_LANE)
         {
             currentLaneIndex--;
-            leftLaneChange = true;
             currentLane = lanes[currentLaneIndex];
         }
     }
@@ -220,13 +218,11 @@ public class PlayerController : MonoBehaviour {
         if (currentLaneIndex == -1)
         {
             currentLaneIndex = 2;
-            rightLaneChange = true;
             currentLane = lanes[currentLaneIndex];
         }
         else if (currentLaneIndex != FAR_RIGHT_LANE)
         {
             currentLaneIndex++;
-            rightLaneChange = true;
             currentLane = lanes[currentLaneIndex];
         }
     }

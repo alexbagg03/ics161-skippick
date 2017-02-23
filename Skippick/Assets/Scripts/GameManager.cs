@@ -11,18 +11,26 @@ public class GameManager : MonoBehaviour {
     private static GameManager _instance;
     public static GameManager Instance { get { return _instance; } }
 
-    public enum STANDINGS
+    public enum STANDING
     {
         FIRST_PLACE,
         SECOND_PLACE,
         THIRD_PLACE,
         TIE
     }
+    public enum AI_DIFFICULTY
+    {
+        EASY,
+        MEDIUM,
+        HARD,
+        NOT_SET
+    }
 
     public bool gameOver = false;
+    public AI_DIFFICULTY AIDifficulty;
 
     private static string NONE = "none";
-    private Dictionary<STANDINGS, string> standings = new Dictionary<STANDINGS, string>();
+    private Dictionary<STANDING, string> standings = new Dictionary<STANDING, string>();
 
     ///////////////////////////////////////////////
     /// MONOBEHAVIOR METHODS
@@ -38,6 +46,7 @@ public class GameManager : MonoBehaviour {
             _instance = this;
         }
 
+        AIDifficulty = AI_DIFFICULTY.NOT_SET;
         InitializeStandings();
     }
     void Update ()
@@ -55,28 +64,28 @@ public class GameManager : MonoBehaviour {
     }
     public void TieGame()
     {
-        standings[STANDINGS.TIE] = "Player"; 
+        standings[STANDING.TIE] = "Player"; 
     }
     public void SetStandingOfSkipper(string name)
     {
-        if (standings[STANDINGS.FIRST_PLACE] == NONE)
+        if (standings[STANDING.FIRST_PLACE] == NONE)
         {
-            standings[STANDINGS.FIRST_PLACE] = name;
+            standings[STANDING.FIRST_PLACE] = name;
         }
-        else if (standings[STANDINGS.SECOND_PLACE] == NONE)
+        else if (standings[STANDING.SECOND_PLACE] == NONE)
         {
-            standings[STANDINGS.SECOND_PLACE] = name;
+            standings[STANDING.SECOND_PLACE] = name;
         }
-        else if (standings[STANDINGS.THIRD_PLACE] == NONE)
+        else if (standings[STANDING.THIRD_PLACE] == NONE)
         {
-            standings[STANDINGS.THIRD_PLACE] = name;
+            standings[STANDING.THIRD_PLACE] = name;
         }
     }
-    public STANDINGS GetPlayerStanding()
+    public STANDING GetPlayerStanding()
     {
-        STANDINGS playerStanding = STANDINGS.TIE;
+        STANDING playerStanding = STANDING.TIE;
 
-        foreach (STANDINGS place in standings.Keys)
+        foreach (STANDING place in standings.Keys)
         {
             if (standings[place] == "Player")
             {
@@ -94,15 +103,19 @@ public class GameManager : MonoBehaviour {
     {
         Time.timeScale = 1;
     }
+    public void SetAIDifficulty(AI_DIFFICULTY difficulty)
+    {
+        AIDifficulty = difficulty;
+    }
 
     ///////////////////////////////////////////////
     /// PRIVATE METHODS
     ///////////////////////////////////////////////
     private void InitializeStandings()
     {
-        standings[STANDINGS.FIRST_PLACE] = NONE;
-        standings[STANDINGS.SECOND_PLACE] = NONE;
-        standings[STANDINGS.THIRD_PLACE] = NONE;
+        standings[STANDING.FIRST_PLACE] = NONE;
+        standings[STANDING.SECOND_PLACE] = NONE;
+        standings[STANDING.THIRD_PLACE] = NONE;
     }
 
 }

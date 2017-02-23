@@ -41,16 +41,16 @@ public class GameOverUIController : MonoBehaviour {
 
         switch (GameManager.Instance.GetPlayerStanding())
         {
-            case GameManager.STANDINGS.FIRST_PLACE:
+            case GameManager.STANDING.FIRST_PLACE:
                 firstPlaceText.SetActive(true);
                 break;
-            case GameManager.STANDINGS.SECOND_PLACE:
+            case GameManager.STANDING.SECOND_PLACE:
                 secondPlaceText.SetActive(true);
                 break;
-            case GameManager.STANDINGS.THIRD_PLACE:
+            case GameManager.STANDING.THIRD_PLACE:
                 thirdPlaceText.SetActive(true);
                 break;
-            case GameManager.STANDINGS.TIE:
+            case GameManager.STANDING.TIE:
                 tieText.SetActive(true);
                 finishText.SetActive(false);
                 break;

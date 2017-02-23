@@ -37,6 +37,7 @@ public class SkipperController : MonoBehaviour {
     private bool leftLaneChange = false;
     private bool rightLaneChange = false;
     private bool resetting = false;
+    private bool difficultySet;
     private float resetTimer;
     private float startHeight;
     private float lastBounceZPos = 0f;
@@ -64,11 +65,15 @@ public class SkipperController : MonoBehaviour {
         initialDriveSpeed = driveSpeed;
         boostSpeed = driveSpeed * 2;
 
-        SetCurrentLaneIndex();
+        InitializeCurrentLaneIndex();
         BounceSkipper();
     }
 	void Update ()
     {
+        if (!difficultySet)
+        {
+            SetDifficulty();
+        }
         if (finished)
         {
             return;
@@ -101,6 +106,7 @@ public class SkipperController : MonoBehaviour {
         GetComponent<Rigidbody>().velocity = Vector3.zero;
         resetTimer = 0;
         failedAttemps++;
+        ResetCurrentLaneIndex();
         StartCoroutine("BeginResettingSkipper", resetTime);
         StartCoroutine("Blink", resetTime);
     }
@@ -221,6 +227,11 @@ public class SkipperController : MonoBehaviour {
                 if (errorChance <= errorPercentage)
                 {
                     bestLaneIndex = UnityEngine.Random.Range(0, 3);
+
+                    while (bestLaneIndex == currentLaneIndex)
+                    {
+                        bestLaneIndex = UnityEngine.Random.Range(0, 3);
+                    }
                 }
             }
 
@@ -322,7 +333,7 @@ public class SkipperController : MonoBehaviour {
             currentLane = lanes[currentLaneIndex];
         }
     }
-    private void SetCurrentLaneIndex()
+    private void InitializeCurrentLaneIndex()
     {
         // Set the current lane index to be out of bounds initially, this
         // will enable ChangeToNextBestLane() to function properly
@@ -333,6 +344,44 @@ public class SkipperController : MonoBehaviour {
                 break;
             case 2:
                 currentLaneIndex = FAR_RIGHT_LANE + 1;
+                break;
+        }
+    }
+    private void ResetCurrentLaneIndex()
+    {
+        if (currentLaneIndex == 0 || currentLaneIndex == 1)
+        {
+            currentLaneIndex = FAR_LEFT_LANE - 1;
+        }
+        else if (currentLaneIndex == 2 || currentLaneIndex == 3)
+        {
+            currentLaneIndex = FAR_LEFT_LANE + 1;
+        }
+        else
+        {
+            currentLaneIndex = FAR_LEFT_LANE - 1;
+        }
+    }
+    private void SetDifficulty()
+    {
+        switch (GameManager.Instance.AIDifficulty)
+        {
+            case GameManager.AI_DIFFICULTY.EASY:
+                errorPercentage = 40;
+                boostPercentage = 10;
+                difficultySet = true;
+                break;
+            case GameManager.AI_DIFFICULTY.MEDIUM:
+                errorPercentage = 20;
+                boostPercentage = 30;
+                difficultySet = true;
+                break;
+            case GameManager.AI_DIFFICULTY.HARD:
+                errorPercentage = 0;
+                boostPercentage = 60;
+                difficultySet = true;
+                break;
+            case GameManager.AI_DIFFICULTY.NOT_SET:
                 break;
         }
     }

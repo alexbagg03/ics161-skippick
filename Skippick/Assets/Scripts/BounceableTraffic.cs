@@ -13,6 +13,12 @@ public class BounceableTraffic : MonoBehaviour {
         {
             case "Player":
                 PlayerController player = other.gameObject.GetComponent<PlayerController>();
+
+                if (player.boosted)
+                {
+                    player.ResetSpeed();
+                }
+
                 player.BouncePlayer();
                 break;
             case "Skipper":
@@ -40,6 +46,7 @@ public class BounceableTraffic : MonoBehaviour {
         {
             case "Player":
                 PlayerController player = other.gameObject.GetComponent<PlayerController>();
+
                 if (Input.GetKeyDown(bounceKey) || Input.GetKeyUp(bounceKey))
                 {
                     player.Boost();
