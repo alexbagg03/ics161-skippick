@@ -16,6 +16,7 @@ public class GameOverUIController : MonoBehaviour {
     public GameObject secondPlaceText;
     public GameObject thirdPlaceText;
     public GameObject tieText;
+    public GameObject playAgainButton;
 
     ///////////////////////////////////////////////
     /// MONOBEHAVIOR METHODS
@@ -55,6 +56,8 @@ public class GameOverUIController : MonoBehaviour {
                 finishText.SetActive(false);
                 break;
         }
+
+        playAgainButton.SetActive(true);
     }
 
 }

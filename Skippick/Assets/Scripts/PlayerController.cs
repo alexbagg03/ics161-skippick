@@ -14,6 +14,8 @@ public class PlayerController : MonoBehaviour {
     public float resetTime = 1f;
     public bool finished = false;
     public bool boosted = false;
+    public AudioClip jumpSound;
+    public AudioClip boostSound;
 
     private static int FAR_RIGHT_LANE = 3;
     private static int FAR_LEFT_LANE = 0;
@@ -126,6 +128,11 @@ public class PlayerController : MonoBehaviour {
 
         GetComponent<Animator>().Play("Jumping");
 
+        if (!GameManager.Instance.gamePaused)
+        {
+            GetComponent<AudioSource>().PlayOneShot(jumpSound, 0.5f);
+        }
+
         // Apply the bounce force
         GetComponent<Rigidbody>().AddForce(new Vector3(0, bounceForce, 0));
     }
@@ -167,6 +174,7 @@ public class PlayerController : MonoBehaviour {
     public void Boost()
     {
         driveSpeed = boostSpeed;
+        GetComponent<AudioSource>().PlayOneShot(boostSound, 0.5f);
         boosted = true;
     }
     public void ResetSpeed()

@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2015
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Skippick.Plugins", "Skippick.Plugins.csproj", "{0001AFCA-88DA-3C2E-B42E-8E1E6BDCDDBC}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Skippick", "Skippick.csproj", "{DECB7ABC-5F47-9483-9FDC-0F27602D0695}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Skippick.Editor", "Skippick.Editor.csproj", "{74C617FB-FDC7-8E46-417D-F1D9A65A1205}"
@@ -11,6 +13,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0001AFCA-88DA-3C2E-B42E-8E1E6BDCDDBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0001AFCA-88DA-3C2E-B42E-8E1E6BDCDDBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0001AFCA-88DA-3C2E-B42E-8E1E6BDCDDBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0001AFCA-88DA-3C2E-B42E-8E1E6BDCDDBC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DECB7ABC-5F47-9483-9FDC-0F27602D0695}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DECB7ABC-5F47-9483-9FDC-0F27602D0695}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DECB7ABC-5F47-9483-9FDC-0F27602D0695}.Release|Any CPU.ActiveCfg = Release|Any CPU
