@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-public class BounceableTraffic : MonoBehaviour {
+public class BounceableTraffic : MonoBehaviour
+{
 
     public KeyCode bounceKey;
 

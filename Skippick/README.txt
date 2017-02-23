@@ -9,3 +9,5 @@ http://soundbible.com/1343-Jump.html
 http://soundbible.com/1858-Metroid-Door.html
 - Action Soundtrack Pack FREE
 https://www.assetstore.unity3d.com/en/#!/content/70362
+- Finish Line Image
+http://i.ytimg.com/vi/wUGXKRtykQE/maxresdefault.jpg

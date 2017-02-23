@@ -32,6 +32,16 @@ public class GameOverUIController : MonoBehaviour {
             _instance = this;
         }
     }
+    void Update()
+    {
+        if (GameManager.Instance.gameOver)
+        {
+            if (Input.GetKey(KeyCode.Space))
+            {
+                GameManager.Instance.RestartGame();
+            }
+        }
+    }
 
     ///////////////////////////////////////////////
     /// PUBLIC METHODS
