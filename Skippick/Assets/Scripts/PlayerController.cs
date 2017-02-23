@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour {
     public float bounceForce = 400f;
     public float resetTime = 1f;
     public bool finished = false;
+    public bool boosted = false;
 
     private static int FAR_RIGHT_LANE = 3;
     private static int FAR_LEFT_LANE = 0;
@@ -122,6 +123,12 @@ public class PlayerController : MonoBehaviour {
         // Save this as the last bounce z position of the player, then use that to remove old traffic
         lastBounceZPos = transform.position.z;
 
+        if (boosted)
+        {
+            driveSpeed /= 2;
+            boosted = false;
+        }
+
         GetComponent<Animator>().Play("Jumping");
 
         // Apply the bounce force
@@ -161,6 +168,11 @@ public class PlayerController : MonoBehaviour {
 
         GameManager.Instance.TieGame();
         GameManager.Instance.GameOver();
+    }
+    public void Boost()
+    {
+        driveSpeed *= 2;
+        boosted = true;
     }
 
     ///////////////////////////////////////////////

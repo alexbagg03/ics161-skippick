@@ -13,9 +13,11 @@ public class SkipperController : MonoBehaviour {
     public float laneChangeSpeed = 0.25f;
     public float bounceForce = 500;
     public float resetTime = 1f;
-    public float percentageOfVariability = 70;
-    public float percentageOfError = 40;
+    public float variabilityPercentage = 70;
+    public float errorPercentage = 40;
+    public float boostPercentage = 30;
     public bool finished = false;
+    public bool boosted = false;
 
     private static int FAR_RIGHT_LANE = 3;
     private static int FAR_LEFT_LANE = 0;
@@ -27,6 +29,7 @@ public class SkipperController : MonoBehaviour {
     private Vector3 lanePosition;
     private Vector3 resetPosition;
     private int currentLaneIndex = -1;
+    private int previousLaneIndex = -1;
     private int bestLaneIndex = -1;
     private int nextBounceIndex = 0;
     private int previousBounceIndex = 0;
@@ -139,11 +142,23 @@ public class SkipperController : MonoBehaviour {
             failedAttemps = 0;
         }
 
-        ChangeToNextBestLane();
+        if (boosted)
+        {
+            driveSpeed /= 2;
+            boosted = false;
+        }
 
+        ChangeToNextBestLane();
         lastBounceZPos = transform.position.z;
         previousBounceIndex = nextBounceIndex;
         nextBounceIndex++;
+    }
+    public void Boost()
+    {
+        previousBounceIndex = nextBounceIndex;
+        nextBounceIndex++;
+        driveSpeed *= 2;
+        boosted = true;
     }
 
     ///////////////////////////////////////////////
@@ -175,7 +190,7 @@ public class SkipperController : MonoBehaviour {
                         // is chosen by the Skipper AI
                         float variabilityChance = UnityEngine.Random.value * 100;
 
-                        if (variabilityChance <= percentageOfVariability)
+                        if (variabilityChance <= variabilityPercentage)
                         {
                             minDistanceAway = distanceAway;
                             bestObjPos = obj.transform.position;
@@ -200,7 +215,7 @@ public class SkipperController : MonoBehaviour {
                 // Add random chance of error
                 float errorChance = UnityEngine.Random.value * 100;
 
-                if (errorChance <= percentageOfError)
+                if (errorChance <= errorPercentage)
                 {
                     bestLaneIndex = UnityEngine.Random.Range(0, 3);
                 }
@@ -288,6 +303,7 @@ public class SkipperController : MonoBehaviour {
     {
         if (currentLaneIndex != FAR_LEFT_LANE)
         {
+            previousLaneIndex = currentLaneIndex;
             currentLaneIndex--;
             leftLaneChange = true;
             currentLane = lanes[currentLaneIndex];
@@ -297,6 +313,7 @@ public class SkipperController : MonoBehaviour {
     {
         if (currentLaneIndex != FAR_RIGHT_LANE)
         {
+            previousLaneIndex = currentLaneIndex;
             currentLaneIndex++;
             rightLaneChange = true;
             currentLane = lanes[currentLaneIndex];
@@ -328,8 +345,8 @@ public class SkipperController : MonoBehaviour {
     {
         resetPosition.z = lastBounceZPos;
         transform.position = resetPosition;
+        currentLaneIndex = previousLaneIndex;
         GetComponent<Rigidbody>().useGravity = false;
-        currentLaneIndex = -1;
         resetting = true;
 
         yield return new WaitForSeconds(resetTime);

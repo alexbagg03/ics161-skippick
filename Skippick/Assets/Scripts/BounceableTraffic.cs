@@ -7,28 +7,24 @@ public class BounceableTraffic : MonoBehaviour {
 
     public KeyCode bounceKey;
 
-    private PlayerController player;
-
-    void Start()
-    {
-        player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
-    }
-    void FixedUpdate()
-    {
-        //Vector3 newPostion = transform.position;
-        //newPostion.z += player.driveSpeed / 2;
-        //GetComponent<Rigidbody>().MovePosition(newPostion);
-    }
     void OnTriggerEnter(Collider other)
     {
         switch (other.gameObject.tag)
         {
             case "Player":
-                PlayerController playerController = other.gameObject.GetComponent<PlayerController>();
-                playerController.BouncePlayer();
+                PlayerController player = other.gameObject.GetComponent<PlayerController>();
+                player.BouncePlayer();
                 break;
             case "Skipper":
-                other.gameObject.GetComponent<SkipperController>().BounceSkipper();
+                SkipperController skipper = other.gameObject.GetComponent<SkipperController>();
+                skipper.BounceSkipper();
+
+                float boostChance = Random.value * 100;
+
+                if (boostChance <= skipper.boostPercentage)
+                {
+                    skipper.Boost();
+                }
                 break;
         }
     }
@@ -37,13 +33,11 @@ public class BounceableTraffic : MonoBehaviour {
         switch (other.gameObject.tag)
         {
             case "Player":
-                PlayerController playerController = other.gameObject.GetComponent<PlayerController>();
-
-                // Possibly going to be used for a special move instead
-                //if (Input.GetKeyDown(bounceKey) || Input.GetKeyUp(bounceKey))
-                //{
-                //    playerController.BouncePlayer();
-                //}
+                PlayerController player = other.gameObject.GetComponent<PlayerController>();
+                if (Input.GetKeyDown(bounceKey) || Input.GetKeyUp(bounceKey))
+                {
+                    player.Boost();
+                }
                 break;
         }
     }
